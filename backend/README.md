@@ -29,9 +29,12 @@ src/architecto/
 ├── api/v1/            # routes (health, chat)
 ├── agent/             # LangGraph : state, prompts, nodes, graph, tools/
 ├── core/
-│   ├── config/       # settings par domaine (app, database, llm, observability, cors)
+│   ├── config/       # settings par domaine (app, database, llm, embeddings, observability, cors)
 │   ├── env/          # résolution + cache du fichier .env
-│   └── llm.py        # ChatOpenAI + embeddings
+│   └── llm/          # adaptateurs multi-provider (Adapter + Registry)
+│       ├── base.py       # ports ChatAdapter / EmbeddingAdapter
+│       ├── registry.py   # get_chat_model() / get_embeddings()
+│       └── providers/    # anthropic · openai · google · deepseek (imports paresseux)
 ├── db/                # session async, models, vectorstore pgvector
 └── schemas/           # DTO Pydantic
 ```
@@ -39,9 +42,27 @@ src/architecto/
 ### Configuration
 
 Tout passe par l'environnement, sans valeur métier en dur. Chaque section a son préfixe :
-`APP_`, `DB_`, `LLM_`, `LANGSMITH_`, `CORS_` (voir `.env.example`). L'accès se fait
-via `settings.<section>.<champ>` (ex. `settings.db.url`, `settings.llm.model`). Les
+`APP_`, `DB_`, `LLM_`, `EMBEDDING_`, `LANGSMITH_`, `CORS_` (voir `.env.example`). L'accès se
+fait via `settings.<section>.<champ>` (ex. `settings.db.url`, `settings.llm.model`). Les
 secrets sont des `SecretStr` et l'URL Postgres est composée à partir de ses composants.
+
+### LLM multi-provider (adaptateur)
+
+Le provider est interchangeable par config, sans toucher au code :
+
+- **chat** : `LLM_PROVIDER` ∈ `anthropic | openai | google | deepseek` (+ `LLM_MODEL`, `LLM_API_KEY`)
+- **embeddings** : `EMBEDDING_PROVIDER` ∈ `openai | google` (découplé — Anthropic n'a pas d'embeddings)
+
+Chaque adaptateur importe son intégration LangChain de façon paresseuse : la base installe
+`anthropic` (chat par défaut) + `openai` (embeddings). Pour les autres :
+
+```bash
+uv add architecto[google]     # ou : uv add langchain-google-genai
+uv add architecto[deepseek]   # ou : uv add langchain-deepseek
+```
+
+Ajouter un provider = un fichier dans `core/llm/providers/` qui s'enregistre via
+`register_chat(...)` / `register_embedding(...)`.
 
 ## Notes production
 - Remplacer `MemorySaver` par `AsyncPostgresSaver` (persistance des threads).
