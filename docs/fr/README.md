@@ -15,7 +15,7 @@ vectorielle (RAG).
 | Agent     | LangChain · LangGraph · LangSmith (observabilité)         |
 | Données   | PostgreSQL · pgvector · SQLAlchemy                        |
 | LLM       | Multi-provider (Claude · OpenAI · Gemini · DeepSeek)      |
-| Frontend  | React (Vite)                                              |
+| Frontend  | React · TS · Vite · React Router · Tailwind · shadcn/ui · MobX |
 
 ## Principes
 

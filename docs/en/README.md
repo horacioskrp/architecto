@@ -14,7 +14,7 @@ breakdowns and code review — backed by a vector knowledge base (RAG).
 | Agent     | LangChain · LangGraph · LangSmith (observability)         |
 | Data      | PostgreSQL · pgvector · SQLAlchemy                        |
 | LLM       | Multi-provider (Claude · OpenAI · Gemini · DeepSeek)      |
-| Frontend  | React (Vite)                                              |
+| Frontend  | React · TS · Vite · React Router · Tailwind · shadcn/ui · MobX |
 
 ## Principles
 

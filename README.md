@@ -13,7 +13,7 @@ une base de connaissances vectorielle.
 | Backend      | FastAPI · uv · Pydantic v2                                          |
 | Agent        | LangChain · LangGraph · LangSmith (observabilité)                  |
 | Données      | PostgreSQL · pgvector (RAG) · SQLAlchemy · Alembic                 |
-| Frontend     | React (Vite)                                                        |
+| Frontend     | React · TypeScript · Vite · React Router · Tailwind · shadcn/ui · MobX |
 
 ## Architecture (monorepo)
 

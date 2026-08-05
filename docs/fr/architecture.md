@@ -89,8 +89,24 @@ POST /api/v1/chat
 
 ## Frontend
 
-React + Vite, chat minimal. Le serveur de dev proxifie `/api` vers le backend
-(`http://localhost:8000`) — voir `frontend/vite.config.js`.
+React + **TypeScript** (Vite). Routage par **React Router** (data router), UI en
+**Tailwind CSS** + **shadcn/ui** (style new-york), état via **MobX**
+(`makeAutoObservable`), police système (`-apple-system, BlinkMacSystemFont, …`).
+
+```
+frontend/src/
+├── main.tsx           # entrée : StoreProvider + RouterProvider
+├── router.tsx         # routes (createBrowserRouter)
+├── api/client.ts      # appels HTTP typés
+├── stores/            # MobX : RootStore · ChatStore · context (hook useStores)
+├── components/
+│   ├── ui/           # composants shadcn (button, input, card)
+│   └── layout/       # RootLayout
+└── pages/             # ChatPage · NotFoundPage
+```
+
+Le serveur de dev proxifie `/api` vers le backend (`http://localhost:8000`) —
+voir `frontend/vite.config.ts`.
 
 ## Choix structurants
 
