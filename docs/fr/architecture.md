@@ -17,25 +17,34 @@ architecto/
 ```
 backend/src/architecto/
 ├── main.py            # app FastAPI + CORS + activation LangSmith
-├── api/v1/            # routes HTTP (health, chat)
-├── agent/             # graphe LangGraph : state · prompts · nodes · graph · tools/
-├── core/
+├── api/v1/            # agrégateur : inclut les routers des features
+├── agent/             # orchestration LangGraph : state · prompts · nodes · graph · tools
+├── core/              # fondations transverses (aucun métier)
 │   ├── config/       # settings par domaine (app, database, llm, embeddings…)
 │   ├── env/          # résolution + cache du fichier .env
+│   ├── db/           # infra connexion : base (DeclarativeBase) + session async
 │   └── llm/          # adaptateurs LLM multi-provider (Adapter + Registry)
-├── db/                # session async · models · vectorstore pgvector
-└── schemas/           # DTO Pydantic (entrée/sortie API)
+└── features/          # vertical slices (métier regroupé par feature)
+    ├── chat/         # router + schemas
+    ├── knowledge/    # models · vectorstore pgvector · tool de recherche (RAG)
+    └── health/       # router
 ```
 
-### Rôle de chaque couche
+### Deux axes d'organisation
 
-| Couche     | Responsabilité                                                     |
-|------------|-------------------------------------------------------------------|
-| `api`      | Exposition HTTP, validation via `schemas`, aucun métier.          |
-| `agent`    | Logique de l'agent : graphe LangGraph, prompts, outils (tools).   |
-| `core`     | Fondations transverses : configuration, chargement env, LLM.      |
-| `db`       | Accès données : session SQLAlchemy async, modèles, store vectoriel.|
-| `schemas`  | Contrats d'API (Pydantic), découplés des modèles de base.         |
+- **`core/`** — fondations **transverses**, sans métier : configuration, chargement
+  de l'environnement, connexion base de données, adaptateurs LLM.
+- **`features/`** — le métier en **tranches verticales** : chaque feature possède
+  son router, ses schémas, ses modèles et ses outils.
+- **`agent/`** — le moteur d'orchestration LangGraph ; il agrège les outils que les
+  features exposent (ex. la recherche de la feature `knowledge`).
+
+| Couche       | Responsabilité                                                       |
+|--------------|---------------------------------------------------------------------|
+| `api`        | Agrège et versionne les routers des features (aucun métier).        |
+| `agent`      | Orchestration : graphe LangGraph, prompts, registre d'outils.       |
+| `core`       | Fondations transverses : config, env, connexion DB, LLM.            |
+| `features/*` | Une tranche verticale par domaine (router · schemas · models · tools).|
 
 ## L'agent (LangGraph)
 

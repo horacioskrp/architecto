@@ -26,18 +26,26 @@ uv run uvicorn architecto.main:app --reload
 ```
 src/architecto/
 ├── main.py            # app FastAPI + CORS + LangSmith
-├── api/v1/            # routes (health, chat)
-├── agent/             # LangGraph : state, prompts, nodes, graph, tools/
-├── core/
+├── api/v1/            # agrégateur : inclut les routers des features
+├── agent/             # orchestration LangGraph : state, prompts, nodes, graph, tools
+├── core/              # fondations transverses (aucun métier)
 │   ├── config/       # settings par domaine (app, database, llm, embeddings, observability, cors)
 │   ├── env/          # résolution + cache du fichier .env
+│   ├── db/           # infra connexion : base (DeclarativeBase) + session async
 │   └── llm/          # adaptateurs multi-provider (Adapter + Registry)
 │       ├── base.py       # ports ChatAdapter / EmbeddingAdapter
 │       ├── registry.py   # get_chat_model() / get_embeddings()
 │       └── providers/    # anthropic · openai · google · deepseek (imports paresseux)
-├── db/                # session async, models, vectorstore pgvector
-└── schemas/           # DTO Pydantic
+└── features/          # vertical slices (métier regroupé par feature)
+    ├── chat/         # router + schemas
+    ├── knowledge/    # models · vectorstore pgvector · tool de recherche (RAG)
+    └── health/       # router
 ```
+
+> **Organisation** : `core/` = fondations transverses (connexion DB, config, LLM),
+> `features/` = métier en tranches verticales (chaque feature possède son router,
+> ses schémas, ses modèles et ses outils). L'agent est le moteur d'orchestration qui
+> agrège les outils exposés par les features.
 
 ### Configuration
 

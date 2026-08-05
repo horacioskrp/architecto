@@ -1,6 +1,6 @@
 from langchain_core.tools import tool
 
-from architecto.db.vectorstore import get_vectorstore
+from architecto.features.knowledge.vectorstore import get_vectorstore
 
 
 @tool

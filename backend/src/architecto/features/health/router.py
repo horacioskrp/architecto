@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from architecto import __version__
 
-router = APIRouter()
+router = APIRouter(tags=["health"])
 
 
 @router.get("/health")

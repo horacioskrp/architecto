@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from architecto.db.session import Base
+from architecto.core.db import Base
 
 
 class Document(Base):

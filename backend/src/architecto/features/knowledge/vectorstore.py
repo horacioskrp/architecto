@@ -10,7 +10,7 @@ COLLECTION_NAME = "architecto_knowledge"
 
 @lru_cache
 def get_vectorstore() -> PGVector:
-    """Store vectoriel pgvector partagé (RAG).
+    """Store vectoriel pgvector de la base de connaissances (RAG).
 
     langchain-postgres attend une URL psycopg (driver v3).
     """

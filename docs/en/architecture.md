@@ -17,25 +17,34 @@ architecto/
 ```
 backend/src/architecto/
 ├── main.py            # FastAPI app + CORS + LangSmith activation
-├── api/v1/            # HTTP routes (health, chat)
-├── agent/             # LangGraph graph: state · prompts · nodes · graph · tools/
-├── core/
+├── api/v1/            # aggregator: includes each feature's router
+├── agent/             # LangGraph orchestration: state · prompts · nodes · graph · tools
+├── core/              # cross-cutting foundations (no business logic)
 │   ├── config/       # per-domain settings (app, database, llm, embeddings…)
 │   ├── env/          # .env resolution + caching
+│   ├── db/           # connection infra: base (DeclarativeBase) + async session
 │   └── llm/          # multi-provider LLM adapters (Adapter + Registry)
-├── db/                # async session · models · pgvector store
-└── schemas/           # Pydantic DTOs (API input/output)
+└── features/          # vertical slices (business logic grouped by feature)
+    ├── chat/         # router + schemas
+    ├── knowledge/    # models · pgvector store · search tool (RAG)
+    └── health/       # router
 ```
 
-### Role of each layer
+### Two organizing axes
 
-| Layer      | Responsibility                                                    |
-|------------|------------------------------------------------------------------|
-| `api`      | HTTP exposure, validation via `schemas`, no business logic.      |
-| `agent`    | Agent logic: LangGraph graph, prompts, tools.                    |
-| `core`     | Cross-cutting foundations: configuration, env loading, LLM.      |
-| `db`       | Data access: async SQLAlchemy session, models, vector store.     |
-| `schemas`  | API contracts (Pydantic), decoupled from database models.        |
+- **`core/`** — **cross-cutting** foundations, no business logic: configuration,
+  environment loading, database connection, LLM adapters.
+- **`features/`** — business logic as **vertical slices**: each feature owns its
+  router, schemas, models and tools.
+- **`agent/`** — the LangGraph orchestration engine; it aggregates the tools that
+  features expose (e.g. the search tool from the `knowledge` feature).
+
+| Layer        | Responsibility                                                     |
+|--------------|--------------------------------------------------------------------|
+| `api`        | Aggregates and versions feature routers (no business logic).       |
+| `agent`      | Orchestration: LangGraph graph, prompts, tool registry.            |
+| `core`       | Cross-cutting foundations: config, env, DB connection, LLM.        |
+| `features/*` | One vertical slice per domain (router · schemas · models · tools). |
 
 ## The agent (LangGraph)
 

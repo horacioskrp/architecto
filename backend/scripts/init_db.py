@@ -8,8 +8,8 @@ import asyncio
 
 from sqlalchemy import text
 
-from architecto.db.models import Document  # noqa: F401  (enregistre la table)
-from architecto.db.session import Base, engine
+from architecto.core.db import Base, engine
+from architecto.features.knowledge.models import Document  # noqa: F401  (enregistre la table)
 
 
 async def main() -> None:
