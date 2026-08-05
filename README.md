@@ -4,6 +4,8 @@
 (analyse de besoins, choix d'architecture, ADR, diagrammes, revue de code) en s'appuyant sur
 une base de connaissances vectorielle.
 
+📖 **Documentation** (FR / EN) : [`docs/`](docs/README.md)
+
 ## Stack
 
 | Couche       | Technologies                                                        |

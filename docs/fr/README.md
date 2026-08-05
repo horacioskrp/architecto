@@ -1,0 +1,38 @@
+# Architecto — Vue d'ensemble
+
+> 🇬🇧 [English version](../en/README.md)
+
+**Architecto** est un agent IA « architecte logiciel ». Il assiste la conception :
+clarification des besoins, choix d'architecture, rédaction d'ADR, diagrammes,
+découpage en modules et revue de code — en s'appuyant sur une base de connaissances
+vectorielle (RAG).
+
+## Stack
+
+| Couche    | Technologies                                              |
+|-----------|-----------------------------------------------------------|
+| Backend   | FastAPI · uv · Pydantic v2                                |
+| Agent     | LangChain · LangGraph · LangSmith (observabilité)         |
+| Données   | PostgreSQL · pgvector · SQLAlchemy                        |
+| LLM       | Multi-provider (Claude · OpenAI · Gemini · DeepSeek)      |
+| Frontend  | React (Vite)                                              |
+
+## Principes
+
+- **Configuration par l'environnement** — rien de métier n'est écrit en dur ;
+  tout est piloté par variables d'environnement. Voir [Configuration](configuration.md).
+- **LLM interchangeable** — le provider est sélectionné par config grâce à un
+  pattern adaptateur. Voir [Providers LLM](llm-providers.md).
+- **Séparation par domaine** — `api`, `agent`, `core`, `db`, `schemas` sont
+  découplés et testables isolément. Voir [Architecture](architecture.md).
+
+## Par où commencer
+
+1. [Démarrage](getting-started.md) — lancer la base, le backend et le frontend.
+2. [Configuration](configuration.md) — variables d'environnement par section.
+3. [Architecture](architecture.md) — organisation du code et flux de l'agent.
+4. [Providers LLM](llm-providers.md) — changer de modèle, ajouter un provider.
+
+## Statut
+
+Projet en cours d'initialisation. Cette documentation évolue avec le code.
