@@ -26,25 +26,28 @@ architecto/
 
 ## Démarrage rapide
 
-### 1. Base de données
+### Tout en Docker (le plus simple)
 
 ```bash
-docker compose up -d db
+cp backend/.env.example backend/.env   # renseigner les clés LLM
+docker compose up --build
 ```
 
-### 2. Backend
+Frontend : http://localhost:5173 · Backend : http://localhost:8000
+
+### En local
+
+```bash
+docker compose up -d db                 # Postgres + pgvector (port 5433)
+```
 
 ```bash
 cd backend
-cp .env.example .env        # renseigner OPENAI_API_KEY, LANGSMITH_API_KEY...
+cp .env.example .env                    # renseigner LLM_API_KEY, EMBEDDING_API_KEY...
 uv sync
-uv run alembic upgrade head
+uv run python scripts/init_db.py        # extension vector + tables
 uv run uvicorn architecto.main:app --reload
 ```
-
-API sur http://localhost:8000 · docs sur http://localhost:8000/docs
-
-### 3. Frontend
 
 ```bash
 cd frontend
@@ -52,4 +55,6 @@ npm install
 npm run dev
 ```
 
-UI sur http://localhost:5173
+API : http://localhost:8000/docs · UI : http://localhost:5173
+
+📖 Détails : [`docs/`](docs/README.md) — [Démarrage](docs/fr/getting-started.md) · [Getting started](docs/en/getting-started.md)

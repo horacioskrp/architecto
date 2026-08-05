@@ -62,6 +62,30 @@ uv add langchain-deepseek         # DeepSeek
 
 Then change `LLM_PROVIDER` in `.env`. See [LLM providers](llm-providers.md).
 
+## Run everything with Docker
+
+A `docker-compose.yml` orchestrates all three services (db + backend + frontend):
+
+```bash
+cp backend/.env.example backend/.env   # set LLM keys (optional for /health)
+docker compose up --build
+```
+
+- Frontend: http://localhost:5173 (nginx, proxies `/api` → backend)
+- Backend: http://localhost:8000
+- The `backend` service initializes the schema (vector extension + tables) on startup.
+
+Image details:
+
+| Service | Image | Notes |
+|---------|-------|-------|
+| `backend` | multi-stage Python 3.12 + uv, non-root runtime | `Dockerfile` |
+| `frontend` | Node 22 build → **nginx** runtime (static + SPA fallback) | `Dockerfile` + `nginx.conf` |
+| `db` | `pgvector/pgvector:pg16` | volume `architecto_pgdata` |
+
+Within the docker network the backend reaches the database at `db:5432`
+(`DB_HOST`/`DB_PORT` overridden in compose).
+
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |
