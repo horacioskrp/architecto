@@ -1,0 +1,13 @@
+from fastapi import APIRouter
+
+from architecto.agent.graph import run_agent
+from architecto.schemas.chat import ChatRequest, ChatResponse
+
+router = APIRouter()
+
+
+@router.post("", response_model=ChatResponse)
+async def chat(payload: ChatRequest) -> ChatResponse:
+    """Point d'entrée de conversation avec l'agent Architecto."""
+    answer = await run_agent(message=payload.message, thread_id=payload.thread_id)
+    return ChatResponse(thread_id=payload.thread_id, answer=answer)
