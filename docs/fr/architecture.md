@@ -52,15 +52,24 @@ L'agent est un **graphe d'états** plutôt qu'un simple appel LLM. Cela le rend
 extensible (mémoire, human-in-the-loop, persistance des threads).
 
 ```
-        ┌─────────┐   tools_condition   ┌─────────┐
-START ─▶ │  agent  │ ──────────────────▶ │  tools  │
-        └─────────┘ ◀────────────────── └─────────┘
-             │
-             ▼
-            END
+                 needs_clarification ?
+                 ┌──────────────┐
+START ─▶ triage ─┤              ├─▶ clarify ─▶ END
+                 └──────┬───────┘
+                        │ non
+                        ▼
+                   ┌─────────┐  tools_condition  ┌─────────┐
+                   │  agent  │ ────────────────▶ │  tools  │
+                   └─────────┘ ◀──────────────── └─────────┘
+                        │
+                        ▼
+                       END
 ```
 
-- **`agent`** : le LLM (avec ses outils liés) répond, ou décide d'appeler un outil.
+- **`triage`** : décide (sortie structurée) si des informations essentielles manquent.
+- **`clarify`** : si oui, pose des questions ciblées et termine le tour (pas de réponse
+  hâtive) — c'est le comportement « copilote ».
+- **`agent`** : sinon, le LLM (avec ses outils liés) répond ou décide d'appeler un outil.
 - **`tools`** : exécute l'outil demandé (ex. recherche dans la base de connaissances).
 - **`tools_condition`** : boucle ReAct — tant que le LLM demande un outil, on repasse
   par `tools`, sinon on termine.

@@ -52,15 +52,24 @@ The agent is a **state graph**, not a plain LLM call. This makes it extensible
 (memory, human-in-the-loop, thread persistence).
 
 ```
-        ┌─────────┐   tools_condition   ┌─────────┐
-START ─▶ │  agent  │ ──────────────────▶ │  tools  │
-        └─────────┘ ◀────────────────── └─────────┘
-             │
-             ▼
-            END
+                 needs_clarification ?
+                 ┌──────────────┐
+START ─▶ triage ─┤              ├─▶ clarify ─▶ END
+                 └──────┬───────┘
+                        │ no
+                        ▼
+                   ┌─────────┐  tools_condition  ┌─────────┐
+                   │  agent  │ ────────────────▶ │  tools  │
+                   └─────────┘ ◀──────────────── └─────────┘
+                        │
+                        ▼
+                       END
 ```
 
-- **`agent`**: the LLM (with its bound tools) answers, or decides to call a tool.
+- **`triage`**: decides (structured output) whether essential info is missing.
+- **`clarify`**: if so, asks targeted questions and ends the turn (no premature
+  answer) — this is the "copilot" behavior.
+- **`agent`**: otherwise, the LLM (with its bound tools) answers or decides to call a tool.
 - **`tools`**: runs the requested tool (e.g. knowledge base search).
 - **`tools_condition`**: ReAct loop — while the LLM requests a tool, go through
   `tools` again; otherwise finish.
