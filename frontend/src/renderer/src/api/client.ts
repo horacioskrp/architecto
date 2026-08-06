@@ -1,4 +1,7 @@
-const BASE = "/api/v1";
+// En Electron il n'y a pas de proxy nginx : on appelle le backend en URL absolue.
+// Surchargeable au build via VITE_API_BASE_URL.
+const API_HOST = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const BASE = `${API_HOST}/api/v1`;
 
 export interface ChatResponse {
   thread_id: string;

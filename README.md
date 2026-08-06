@@ -13,50 +13,40 @@ une base de connaissances vectorielle.
 | Backend      | FastAPI · uv · Pydantic v2                                          |
 | Agent        | LangChain · LangGraph · LangSmith (observabilité)                  |
 | Données      | PostgreSQL · pgvector (RAG) · SQLAlchemy · Alembic                 |
-| Frontend     | React · TypeScript · Vite · React Router · Tailwind · shadcn/ui · MobX |
+| Desktop      | Electron · React · TypeScript · Vite · React Router · Tailwind · shadcn/ui · MobX |
 
 ## Architecture (monorepo)
 
 ```
 architecto/
 ├── backend/     # API + agent LangGraph
-├── frontend/    # UI React (TypeScript)
+├── frontend/    # app desktop Electron (renderer React/TypeScript)
 ├── sdk/python/  # SDK client Python (architecto-sdk)
 ├── docs/        # documentation FR/EN
-└── docker-compose.yml   # Postgres + pgvector
+└── docker-compose.yml   # Postgres + pgvector + backend
 ```
 
 ## Démarrage rapide
 
-### Tout en Docker (le plus simple)
+### 1. Base + backend (Docker)
 
 ```bash
 cp backend/.env.example backend/.env   # renseigner les clés LLM
-docker compose up --build
+docker compose up --build              # db + backend (API sur :8000)
 ```
 
-Frontend : http://localhost:5173 · Backend : http://localhost:8000
+*(ou en local : `docker compose up -d db` puis `cd backend && uv sync && uv run python scripts/init_db.py && uv run uvicorn architecto.main:app --reload`)*
 
-### En local
-
-```bash
-docker compose up -d db                 # Postgres + pgvector (port 5433)
-```
-
-```bash
-cd backend
-cp .env.example .env                    # renseigner LLM_API_KEY, EMBEDDING_API_KEY...
-uv sync
-uv run python scripts/init_db.py        # extension vector + tables
-uv run uvicorn architecto.main:app --reload
-```
+### 2. App desktop (Electron)
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev            # lance l'app Electron (pointe sur http://localhost:8000)
 ```
 
-API : http://localhost:8000/docs · UI : http://localhost:5173
+API : http://localhost:8000/docs
+
+📖 Détails : [`docs/`](docs/README.md) — [Démarrage](docs/fr/getting-started.md) · [Getting started](docs/en/getting-started.md)
 
 📖 Détails : [`docs/`](docs/README.md) — [Démarrage](docs/fr/getting-started.md) · [Getting started](docs/en/getting-started.md)

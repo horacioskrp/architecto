@@ -17,6 +17,10 @@ dist/
 .vite/
 *.tsbuildinfo
 
+# Electron
+out/
+release/
+
 # IDE / OS
 .idea/
 .vscode/
