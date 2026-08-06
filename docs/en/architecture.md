@@ -95,26 +95,33 @@ POST /api/v1/chat
    → ChatResponse
 ```
 
-## Frontend
+## Frontend (Electron desktop app)
 
-React + **TypeScript** (Vite). Routing via **React Router** (data router), UI in
-**Tailwind CSS** + **shadcn/ui** (new-york style), state via **MobX**
-(`makeAutoObservable`), system font stack (`-apple-system, BlinkMacSystemFont, …`).
+An **Electron** app (thin client) built with **electron-vite**. The renderer is the
+**React + TypeScript** app (Tailwind + shadcn/ui, **MobX** state, system font stack).
 
 ```
-frontend/src/
-├── main.tsx           # entry: StoreProvider + RouterProvider
-├── router.tsx         # routes (createBrowserRouter)
-├── api/client.ts      # typed HTTP calls
-├── stores/            # MobX: RootStore · ChatStore · context (useStores hook)
-├── components/
-│   ├── ui/           # shadcn components (button, input, card)
-│   └── layout/       # RootLayout
-└── pages/             # ChatPage · NotFoundPage
+frontend/
+├── electron.vite.config.ts   # config for the 3 processes
+├── electron-builder.yml      # packaging (win/mac/linux)
+└── src/
+    ├── main/index.ts         # main process: window, lifecycle, prod CSP
+    ├── preload/index.ts      # typed bridge (contextBridge -> window.api)
+    └── renderer/             # the React app
+        ├── index.html
+        └── src/              # main.tsx · router.tsx · api · stores · components · pages
 ```
 
-The dev server proxies `/api` to the backend (`http://localhost:8000`) — see
-`frontend/vite.config.ts`.
+**Security**: `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`,
+minimal preload via `contextBridge`, strict CSP injected in production.
+
+**Electron specifics**:
+- routing via **`createHashRouter`** (production loads over `file://`, where history
+  routing does not work);
+- no `/api` proxy: the renderer calls the backend at a configurable **absolute URL**
+  (`VITE_API_BASE_URL`, default `http://localhost:8000`) — consistent with the SDK.
+
+The app is a **thin client**: the backend runs separately (local or container).
 
 ## Key decisions
 
