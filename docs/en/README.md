@@ -31,6 +31,7 @@ breakdowns and code review — backed by a vector knowledge base (RAG).
 2. [Configuration](configuration.md) — environment variables by section.
 3. [Architecture](architecture.md) — code layout and agent flow.
 4. [LLM providers](llm-providers.md) — switch models, add a provider.
+5. [Python SDK](sdk.md) — typed client to consume the API.
 
 ## Status
 

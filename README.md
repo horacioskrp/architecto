@@ -20,7 +20,9 @@ une base de connaissances vectorielle.
 ```
 architecto/
 ├── backend/     # API + agent LangGraph
-├── frontend/    # UI React
+├── frontend/    # UI React (TypeScript)
+├── sdk/python/  # SDK client Python (architecto-sdk)
+├── docs/        # documentation FR/EN
 └── docker-compose.yml   # Postgres + pgvector
 ```
 

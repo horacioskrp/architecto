@@ -20,6 +20,7 @@ La documentation est disponible en deux langues / Documentation is available in 
 | [Démarrage](fr/getting-started.md) | [Getting started](en/getting-started.md) |
 | [Configuration](fr/configuration.md) | [Configuration](en/configuration.md) |
 | [Providers LLM](fr/llm-providers.md) | [LLM providers](en/llm-providers.md) |
+| [SDK Python](fr/sdk.md) | [Python SDK](en/sdk.md) |
 
 > Les deux versions doivent rester synchronisées. Toute modification d'une page FR
 > doit être répercutée sur son équivalent EN (et inversement).
