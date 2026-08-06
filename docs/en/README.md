@@ -32,6 +32,7 @@ breakdowns and code review — backed by a vector knowledge base (RAG).
 3. [Architecture](architecture.md) — code layout and agent flow.
 4. [LLM providers](llm-providers.md) — switch models, add a provider.
 5. [Python SDK](sdk.md) — typed client to consume the API.
+6. [Roadmap](roadmap.md) — what we build and in which order.
 
 ## Status
 
