@@ -40,15 +40,18 @@ curl -X POST http://localhost:8000/api/v1/chat \
   -d '{"message": "Propose an architecture for a booking API", "thread_id": "demo"}'
 ```
 
-## 3. Frontend
+## 3. Desktop app (Electron)
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev            # launches the Electron app
 ```
 
-UI: http://localhost:5173 (the `/api` proxy points to the backend).
+The **Electron** app (thin client) targets the backend at an absolute URL
+(`http://localhost:8000` by default, overridable via `VITE_API_BASE_URL`).
+
+Package an installer: `npm run build:win` (or `build:mac` / `build:linux`).
 
 ## Optional providers
 
@@ -62,16 +65,16 @@ uv add langchain-deepseek         # DeepSeek
 
 Then change `LLM_PROVIDER` in `.env`. See [LLM providers](llm-providers.md).
 
-## Run everything with Docker
+## Backend with Docker
 
-A `docker-compose.yml` orchestrates all three services (db + backend + frontend):
+The `docker-compose.yml` orchestrates the database and API (the desktop app runs
+locally):
 
 ```bash
 cp backend/.env.example backend/.env   # set LLM keys (optional for /health)
-docker compose up --build
+docker compose up --build              # db + backend
 ```
 
-- Frontend: http://localhost:5173 (nginx, proxies `/api` → backend)
 - Backend: http://localhost:8000
 - The `backend` service initializes the schema (vector extension + tables) on startup.
 
@@ -80,7 +83,6 @@ Image details:
 | Service | Image | Notes |
 |---------|-------|-------|
 | `backend` | multi-stage Python 3.12 + uv, non-root runtime | `Dockerfile` |
-| `frontend` | Node 22 build → **nginx** runtime (static + SPA fallback) | `Dockerfile` + `nginx.conf` |
 | `db` | `pgvector/pgvector:pg16` | volume `architecto_pgdata` |
 
 Within the docker network the backend reaches the database at `db:5432`

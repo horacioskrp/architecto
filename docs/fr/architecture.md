@@ -96,26 +96,33 @@ POST /api/v1/chat
    → ChatResponse
 ```
 
-## Frontend
+## Frontend (app desktop Electron)
 
-React + **TypeScript** (Vite). Routage par **React Router** (data router), UI en
-**Tailwind CSS** + **shadcn/ui** (style new-york), état via **MobX**
-(`makeAutoObservable`), police système (`-apple-system, BlinkMacSystemFont, …`).
+App **Electron** (client léger) construite avec **electron-vite**. Le renderer est
+l'app **React + TypeScript** (Tailwind + shadcn/ui, état **MobX**, police système).
 
 ```
-frontend/src/
-├── main.tsx           # entrée : StoreProvider + RouterProvider
-├── router.tsx         # routes (createBrowserRouter)
-├── api/client.ts      # appels HTTP typés
-├── stores/            # MobX : RootStore · ChatStore · context (hook useStores)
-├── components/
-│   ├── ui/           # composants shadcn (button, input, card)
-│   └── layout/       # RootLayout
-└── pages/             # ChatPage · NotFoundPage
+frontend/
+├── electron.vite.config.ts   # config des 3 process
+├── electron-builder.yml      # packaging (win/mac/linux)
+└── src/
+    ├── main/index.ts         # process principal : fenêtre, cycle de vie, CSS prod
+    ├── preload/index.ts      # pont typé (contextBridge -> window.api)
+    └── renderer/             # l'app React
+        ├── index.html
+        └── src/              # main.tsx · router.tsx · api · stores · components · pages
 ```
 
-Le serveur de dev proxifie `/api` vers le backend (`http://localhost:8000`) —
-voir `frontend/vite.config.ts`.
+**Sécurité** : `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`,
+preload minimal via `contextBridge`, CSP stricte injectée en production.
+
+**Spécificités Electron** :
+- routage par **`createHashRouter`** (la prod charge en `file://`, l'history routing
+  ne marche pas) ;
+- pas de proxy `/api` : le renderer appelle le backend en **URL absolue** configurable
+  (`VITE_API_BASE_URL`, défaut `http://localhost:8000`) — cohérent avec le SDK.
+
+L'app est un **client léger** : le backend tourne séparément (local ou conteneur).
 
 ## Choix structurants
 
