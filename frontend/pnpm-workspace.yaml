@@ -1,0 +1,4 @@
+# pnpm 11 : foyer des réglages. Autorise les scripts de build (bloqués par défaut).
+allowBuilds:
+  electron: true
+  esbuild: true
