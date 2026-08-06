@@ -41,8 +41,9 @@ docker compose up --build              # db + backend (API sur :8000)
 
 ```bash
 cd frontend
-npm install
-npm run dev            # lance l'app Electron (pointe sur http://localhost:8000)
+corepack enable pnpm   # active pnpm (fourni avec Node)
+pnpm install
+pnpm dev               # lance l'app Electron (pointe sur http://localhost:8000)
 ```
 
 API : http://localhost:8000/docs

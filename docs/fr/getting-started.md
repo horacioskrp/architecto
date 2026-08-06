@@ -44,14 +44,15 @@ curl -X POST http://localhost:8000/api/v1/chat \
 
 ```bash
 cd frontend
-npm install
-npm run dev            # lance l'app Electron
+corepack enable pnpm   # active pnpm (fourni avec Node)
+pnpm install
+pnpm dev               # lance l'app Electron
 ```
 
 L'app **Electron** (client léger) pointe sur le backend en URL absolue
 (`http://localhost:8000` par défaut, surchargeable via `VITE_API_BASE_URL`).
 
-Packaging d'un installeur : `npm run build:win` (ou `build:mac` / `build:linux`).
+Packaging d'un installeur : `pnpm build:win` (ou `build:mac` / `build:linux`).
 
 ## Providers optionnels
 

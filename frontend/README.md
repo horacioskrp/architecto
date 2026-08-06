@@ -8,11 +8,18 @@ TypeScript ; le backend tourne séparément.
 Electron · electron-vite · React 18 · TypeScript · React Router · Tailwind CSS ·
 shadcn/ui · MobX.
 
+Gestionnaire de paquets : **pnpm** (épinglé via `packageManager` dans `package.json`).
+Active-le avec corepack (fourni avec Node) :
+
+```bash
+corepack enable pnpm
+```
+
 ## Développement
 
 ```bash
-npm install
-npm run dev            # lance l'app Electron (HMR)
+pnpm install
+pnpm dev               # lance l'app Electron (HMR)
 ```
 
 L'app appelle le backend en URL absolue : `http://localhost:8000` par défaut,
@@ -22,11 +29,11 @@ surchargeable au build via `VITE_API_BASE_URL`.
 
 | Script | Rôle |
 |--------|------|
-| `npm run dev` | Lance l'app en développement (electron-vite, HMR) |
-| `npm run typecheck` | Vérifie les types (process node + web) |
-| `npm run build` | Typecheck + build des 3 process dans `out/` |
-| `npm run build:win` | Build + installeur Windows (electron-builder) |
-| `npm run build:mac` / `build:linux` | Installeurs macOS / Linux |
+| `pnpm dev` | Lance l'app en développement (electron-vite, HMR) |
+| `pnpm typecheck` | Vérifie les types (process node + web) |
+| `pnpm build` | Typecheck + build des 3 process dans `out/` |
+| `pnpm build:win` | Build + installeur Windows (electron-builder) |
+| `pnpm build:mac` / `build:linux` | Installeurs macOS / Linux |
 
 ## Structure
 
@@ -49,3 +56,6 @@ CSP stricte injectée en production (`script-src 'self'`).
 - Routage par `createHashRouter` (prod en `file://`).
 - Preload en CommonJS (requis avec `sandbox: true`) — d'où l'absence de
   `"type": "module"` dans `package.json`.
+- pnpm bloque les scripts de build par défaut ; `electron` et `esbuild` sont
+  autorisés dans `pnpm-workspace.yaml` (`allowBuilds`). Le `.npmrc`
+  (`shamefully-hoist=true`) assure la compat electron-builder.
