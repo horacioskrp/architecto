@@ -33,6 +33,7 @@ vectorielle (RAG).
 3. [Architecture](architecture.md) — organisation du code et flux de l'agent.
 4. [Providers LLM](llm-providers.md) — changer de modèle, ajouter un provider.
 5. [SDK Python](sdk.md) — client typé pour consommer l'API.
+6. [Feuille de route](roadmap.md) — ce qu'on construit et dans quel ordre.
 
 ## Statut
 
