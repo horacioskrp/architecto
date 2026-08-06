@@ -30,7 +30,7 @@ Legend: ⬜ todo · 🟦 in progress · ✅ done
 | Phase | Feature | Branch | Status |
 |-------|---------|--------|--------|
 | 0 | CI + PR template | `feature/ci` | ⬜ |
-| 1 | Clarification loop | `feature/clarify-loop` | ⬜ |
+| 1 | Clarification loop | `feature/clarify-loop` | ✅ |
 | 1 | RAG ingestion | `feature/rag-ingestion` | ⬜ |
 | 1 | Cited answers | `feature/rag-citations` | ⬜ |
 | 1 | UML/Mermaid tool | `feature/uml-tool` | ⬜ |
