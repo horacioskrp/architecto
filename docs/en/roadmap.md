@@ -33,7 +33,7 @@ Legend: ⬜ todo · 🟦 in progress · ✅ done
 | 1 | Clarification loop | `feature/clarify-loop` | ✅ |
 | 1 | RAG ingestion ([design](design/rag-ingestion.md)) | `feature/rag-ingestion` | ✅ |
 | 1 | Cited answers | `feature/rag-citations` | ✅ |
-| 1 | UML/Mermaid tool | `feature/uml-tool` | ⬜ |
+| 1 | UML/Mermaid tool | `feature/uml-tool` | ✅ |
 | 1 | ADR output | `feature/adr-output` | ⬜ |
 | 2 | Project memory (decisions) | `feature/project-memory` | ⬜ |
 | 2 | Architecture generator (trade-offs) | `feature/architecture-generator` | ⬜ |
