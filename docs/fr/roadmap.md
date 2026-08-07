@@ -36,7 +36,7 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ fait
 | 1 | Outil UML/Mermaid | `feature/uml-tool` | ✅ |
 | 1 | Sortie ADR | `feature/adr-output` | ✅ |
 | 2 | Mémoire projet ([design](design/project-memory.md)) | `feature/project-memory` | ✅ |
-| 2 | Générateur d'architecture (compromis) | `feature/architecture-generator` | ⬜ |
+| 2 | Générateur d'architecture (compromis) | `feature/architecture-generator` | ✅ |
 | 2 | Concepteur de base de données | `feature/database-designer` | ⬜ |
 | 3 | Analyseur de dépôt GitHub | `feature/github-analyzer` | ⬜ |
 | 3 | Checklist sécurité (OWASP) | `feature/security-checklist` | ⬜ |
