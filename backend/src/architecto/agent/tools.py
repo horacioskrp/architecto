@@ -3,7 +3,21 @@
 from architecto.features.adr.tools import generate_adr
 from architecto.features.diagrams.tools import generate_diagram
 from architecto.features.knowledge.tools import search_knowledge_base
+from architecto.features.memory.tools import recall_decisions, save_decision
 
-TOOLS = [search_knowledge_base, generate_diagram, generate_adr]
+TOOLS = [
+    search_knowledge_base,
+    generate_diagram,
+    generate_adr,
+    save_decision,
+    recall_decisions,
+]
 
-__all__ = ["TOOLS", "generate_adr", "generate_diagram", "search_knowledge_base"]
+__all__ = [
+    "TOOLS",
+    "generate_adr",
+    "generate_diagram",
+    "recall_decisions",
+    "save_decision",
+    "search_knowledge_base",
+]

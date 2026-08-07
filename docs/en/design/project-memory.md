@@ -58,9 +58,9 @@ Combines semantic similarity and recency without an extra model.
 ## Implementation steps (small pushes)
 
 1. ✅ Design note (this document)
-2. ⬜ `Project` + `ArchitectureDecision` models + `init_db`
-3. ⬜ RRF reranking + `resolve_project` + tests
-4. ⬜ Ports + adapters (SQL + pgvector decisions)
-5. ⬜ Tools `save_decision` / `recall_decisions` + tests (mocks)
-6. ⬜ Agent wiring + roadmap
-7. ⬜ PR to `develop`
+2. ✅ `Project` + `ArchitectureDecision` models + `init_db`
+3. ✅ RRF reranking + `resolve_project` + tests
+4. ✅ Ports + adapters (SQL + pgvector decisions)
+5. ✅ Tools `save_decision` / `recall_decisions` + tests (mocks)
+6. ✅ Agent wiring + roadmap
+7. 🟦 PR to `develop`

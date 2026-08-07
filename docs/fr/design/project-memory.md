@@ -58,9 +58,9 @@ décroissant. Combine similarité sémantique et récence sans modèle suppléme
 ## Étapes d'implémentation (petits pushes)
 
 1. ✅ Note de design (ce document)
-2. ⬜ Modèles `Project` + `ArchitectureDecision` + `init_db`
-3. ⬜ Reranking RRF + `resolve_project` + tests
-4. ⬜ Ports + adaptateurs (SQL + pgvector décisions)
-5. ⬜ Outils `save_decision` / `recall_decisions` + tests (mocks)
-6. ⬜ Branchement agent + roadmap
-7. ⬜ PR vers `develop`
+2. ✅ Modèles `Project` + `ArchitectureDecision` + `init_db`
+3. ✅ Reranking RRF + `resolve_project` + tests
+4. ✅ Ports + adaptateurs (SQL + pgvector décisions)
+5. ✅ Outils `save_decision` / `recall_decisions` + tests (mocks)
+6. ✅ Branchement agent + roadmap
+7. 🟦 PR vers `develop`
