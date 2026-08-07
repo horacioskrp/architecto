@@ -88,9 +88,9 @@ Summary output: files processed / skipped, chunks created, duration.
 ## Implementation steps (small pushes)
 
 1. ✅ Design note (this document)
-2. ⬜ Extended `Document` + `init_db`
-3. ⬜ Loaders (`.md`/`.txt`/`.pdf`) + `pypdf` dependency + test
-4. ⬜ Chunking + metadata + test
-5. ⬜ Ingestor (idempotence) + test (mocks)
-6. ⬜ CLI `scripts/ingest.py`
-7. ⬜ PR to `develop`
+2. ✅ Extended `Document` + `init_db`
+3. ✅ Loaders (`.md`/`.txt`/`.pdf`) + `pypdf` dependency + test
+4. ✅ Chunking + metadata + test
+5. ✅ Ingestor (idempotence) + test (mocks)
+6. ✅ CLI `scripts/ingest.py`
+7. 🟦 PR to `develop`
