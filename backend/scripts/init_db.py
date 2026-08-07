@@ -10,6 +10,10 @@ from sqlalchemy import text
 
 from architecto.core.db import Base, engine
 from architecto.features.knowledge.models import Document  # noqa: F401  (enregistre la table)
+from architecto.features.memory.models import (  # noqa: F401  (enregistre les tables)
+    ArchitectureDecision,
+    Project,
+)
 
 
 async def main() -> None:
