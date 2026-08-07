@@ -31,7 +31,7 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ fait
 |-------|---------|---------|--------|
 | 0 | CI + template PR | `feature/ci` | ⬜ |
 | 1 | Boucle de clarification | `feature/clarify-loop` | ✅ |
-| 1 | Ingestion RAG | `feature/rag-ingestion` | ⬜ |
+| 1 | Ingestion RAG ([design](design/rag-ingestion.md)) | `feature/rag-ingestion` | 🟦 |
 | 1 | Réponses citées | `feature/rag-citations` | ⬜ |
 | 1 | Outil UML/Mermaid | `feature/uml-tool` | ⬜ |
 | 1 | Sortie ADR | `feature/adr-output` | ⬜ |
