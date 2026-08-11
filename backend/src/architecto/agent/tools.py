@@ -2,6 +2,7 @@
 
 from architecto.features.adr.tools import generate_adr
 from architecto.features.architecture.tools import generate_architecture
+from architecto.features.database.tools import design_database
 from architecto.features.diagrams.tools import generate_diagram
 from architecto.features.knowledge.tools import search_knowledge_base
 from architecto.features.memory.tools import recall_decisions, save_decision
@@ -11,12 +12,14 @@ TOOLS = [
     generate_diagram,
     generate_adr,
     generate_architecture,
+    design_database,
     save_decision,
     recall_decisions,
 ]
 
 __all__ = [
     "TOOLS",
+    "design_database",
     "generate_adr",
     "generate_architecture",
     "generate_diagram",
