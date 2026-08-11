@@ -19,6 +19,7 @@ _EXTRAS = {
     "anthropic": "langchain-anthropic",
     "google": "langchain-google-genai",
     "deepseek": "langchain-deepseek",
+    "local": "fastembed",
 }
 
 

@@ -4,6 +4,6 @@ L'import d'un module d'adaptateur est léger : les intégrations LangChain lourd
 ne sont importées que dans `build()` (import paresseux).
 """
 
-from architecto.core.llm.providers import anthropic, deepseek, google, openai
+from architecto.core.llm.providers import anthropic, deepseek, google, local, openai
 
-__all__ = ["anthropic", "deepseek", "google", "openai"]
+__all__ = ["anthropic", "deepseek", "google", "local", "openai"]
