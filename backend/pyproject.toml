@@ -24,6 +24,7 @@ dependencies = [
     "alembic>=1.14",
     "httpx>=0.27",
     "pypdf>=5.1",
+    "sqlglot>=26",
 ]
 
 [project.optional-dependencies]
