@@ -73,9 +73,9 @@ applicable).
 ## Implementation steps (small pushes)
 
 1. ✅ Design note (this document)
-2. ⬜ `parser` (ast → graph) + test
-3. ⬜ `cycles` + test
-4. ⬜ `layers` (rules) + test
-5. ⬜ `source` (local path + GitHub clone) + test
-6. ⬜ `analyze_dependencies` tool (report) + agent + roadmap
-7. ⬜ PR to `develop`
+2. ✅ `parser` (ast → graph) + test
+3. ✅ `cycles` + test
+4. ✅ `layers` (rules) + test
+5. ✅ `source` (local path + GitHub clone) + test
+6. ✅ `analyze_dependencies` tool (report) + agent + roadmap
+7. 🟦 PR to `develop`

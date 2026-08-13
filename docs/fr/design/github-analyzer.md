@@ -73,9 +73,9 @@ détecté » le cas échéant).
 ## Étapes d'implémentation (petits pushes)
 
 1. ✅ Note de design (ce document)
-2. ⬜ `parser` (ast → graphe) + test
-3. ⬜ `cycles` + test
-4. ⬜ `layers` (règles) + test
-5. ⬜ `source` (chemin local + clone GitHub) + test
-6. ⬜ Outil `analyze_dependencies` (rapport) + agent + roadmap
-7. ⬜ PR vers `develop`
+2. ✅ `parser` (ast → graphe) + test
+3. ✅ `cycles` + test
+4. ✅ `layers` (règles) + test
+5. ✅ `source` (chemin local + clone GitHub) + test
+6. ✅ Outil `analyze_dependencies` (rapport) + agent + roadmap
+7. 🟦 PR vers `develop`
