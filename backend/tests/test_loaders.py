@@ -22,7 +22,7 @@ def test_load_markdown_title_depuis_h1(tmp_path: Path):
     doc = load_file(f)
     assert isinstance(doc, LoadedDocument)
     assert doc.title == "Vrai titre"
-    assert doc.source == str(f)
+    assert doc.source == str(f.resolve())
     assert "Du contenu." in doc.text
 
 
