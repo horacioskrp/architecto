@@ -38,7 +38,7 @@ Legend: ⬜ todo · 🟦 in progress · ✅ done
 | 2 | Project memory ([design](design/project-memory.md)) | `feature/project-memory` | ✅ |
 | 2 | Architecture generator (trade-offs) | `feature/architecture-generator` | ✅ |
 | 2 | Database designer | `feature/database-designer` | ✅ |
-| 3 | GitHub repository analyzer | `feature/github-analyzer` | ⬜ |
+| 3 | GitHub repository analyzer ([design](design/github-analyzer.md)) | `feature/github-analyzer` | 🟦 |
 | 3 | Security checklist (OWASP) | `feature/security-checklist` | ✅ |
 
 ---
