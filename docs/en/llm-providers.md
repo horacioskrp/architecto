@@ -49,6 +49,13 @@ EMBEDDING_API_KEY=sk-...
 | GPT-4o mini everywhere | `LLM_PROVIDER=openai LLM_MODEL=gpt-4o-mini` |
 | Gemini + Google embeddings | `LLM_PROVIDER=google LLM_MODEL=gemini-2.5-flash`, `EMBEDDING_PROVIDER=google` |
 | DeepSeek (OpenAI-compatible) | `LLM_PROVIDER=deepseek LLM_MODEL=deepseek-chat LLM_BASE_URL=https://api.deepseek.com` |
+| DeepSeek + **local** embeddings | `LLM_PROVIDER=deepseek …`, `EMBEDDING_PROVIDER=local` |
+
+### Embeddings
+
+`EMBEDDING_PROVIDER` ∈ `openai` \| `google` \| **`local`**. The **`local`** provider
+(fastembed) runs **without a key** (a small ONNX model downloaded on first use) — ideal
+for a DeepSeek/Claude chat with no embeddings API, or for offline RAG.
 
 ## Installing providers
 
@@ -57,7 +64,8 @@ For the others, the integration is an optional extra:
 
 ```bash
 uv add langchain-google-genai     # Gemini
-uv add langchain-deepseek         # DeepSeek
+uv add langchain-deepseek         # DeepSeek (chat)
+uv add fastembed                  # local embeddings (EMBEDDING_PROVIDER=local)
 ```
 
 If the package is missing, the call fails with an explicit message:

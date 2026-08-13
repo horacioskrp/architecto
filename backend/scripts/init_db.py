@@ -1,14 +1,14 @@
 """Initialise la base : extension pgvector + tables SQLAlchemy.
 
 Usage : uv run python scripts/init_db.py
-Pour un vrai versionnage de schéma, migrer ensuite vers Alembic.
+Script one-shot en moteur synchrone (évite les soucis d'event loop asyncio sous
+Windows). Pour un vrai versionnage de schéma, migrer ensuite vers Alembic.
 """
 
-import asyncio
+from sqlalchemy import create_engine, text
 
-from sqlalchemy import text
-
-from architecto.core.db import Base, engine
+from architecto.core.config import settings
+from architecto.core.db import Base
 from architecto.features.knowledge.models import Document  # noqa: F401  (enregistre la table)
 from architecto.features.memory.models import (  # noqa: F401  (enregistre les tables)
     ArchitectureDecision,
@@ -16,12 +16,13 @@ from architecto.features.memory.models import (  # noqa: F401  (enregistre les t
 )
 
 
-async def main() -> None:
-    async with engine.begin() as conn:
-        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        await conn.run_sync(Base.metadata.create_all)
+def main() -> None:
+    engine = create_engine(settings.db.url, future=True)
+    with engine.begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        Base.metadata.create_all(conn)
     print("Base initialisée (extension vector + tables).")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

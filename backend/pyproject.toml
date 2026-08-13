@@ -32,6 +32,7 @@ dependencies = [
 # Base = anthropic (chat par défaut) + openai (embeddings par défaut).
 google = ["langchain-google-genai>=2.0"]
 deepseek = ["langchain-deepseek>=0.1"]
+local = ["fastembed>=0.4"]
 dev = [
     "ruff>=0.8",
     "pytest>=8.3",
