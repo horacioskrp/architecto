@@ -46,7 +46,8 @@ def load_file(path: Path) -> LoadedDocument | None:
     text = text.strip()
     if not text:
         return None
-    return LoadedDocument(source=str(path), title=title or path.stem, text=text)
+    # source normalisée en chemin absolu -> idempotence robuste (relatif == absolu)
+    return LoadedDocument(source=str(path.resolve()), title=title or path.stem, text=text)
 
 
 def _markdown_title(text: str) -> str | None:

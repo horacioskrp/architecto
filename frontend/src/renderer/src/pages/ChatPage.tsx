@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Markdown } from "@/components/markdown/Markdown";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
 
@@ -27,15 +28,15 @@ export const ChatPage = observer(function ChatPage() {
           <div
             key={i}
             className={cn(
-              "max-w-[80%] whitespace-pre-wrap rounded-lg px-4 py-2 text-sm",
+              "max-w-[85%] rounded-lg px-4 py-2 text-sm",
               m.role === "user" &&
-                "self-end bg-primary text-primary-foreground",
+                "max-w-[80%] self-end whitespace-pre-wrap bg-primary text-primary-foreground",
               m.role === "assistant" && "self-start bg-muted",
               m.role === "error" &&
-                "self-start bg-destructive/10 text-destructive",
+                "self-start whitespace-pre-wrap bg-destructive/10 text-destructive",
             )}
           >
-            {m.content}
+            {m.role === "assistant" ? <Markdown content={m.content} /> : m.content}
           </div>
         ))}
         {chat.loading && (
