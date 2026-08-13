@@ -22,6 +22,7 @@ La documentation est disponible en deux langues / Documentation is available in 
 | [Providers LLM](fr/llm-providers.md) | [LLM providers](en/llm-providers.md) |
 | [SDK Python](fr/sdk.md) | [Python SDK](en/sdk.md) |
 | [Feuille de route](fr/roadmap.md) | [Roadmap](en/roadmap.md) |
+| [Tests en conditions réelles](fr/e2e.md) | [Real-condition tests](en/e2e.md) |
 
 > Les deux versions doivent rester synchronisées. Toute modification d'une page FR
 > doit être répercutée sur son équivalent EN (et inversement).
