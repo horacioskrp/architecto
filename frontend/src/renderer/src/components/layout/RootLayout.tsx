@@ -1,19 +1,30 @@
+import { observer } from "mobx-react-lite";
+import { PanelLeft } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
-export function RootLayout() {
+import { ConversationSidebar } from "@/components/layout/ConversationSidebar";
+import { useStores } from "@/stores/context";
+
+export const RootLayout = observer(function RootLayout() {
+  const { ui } = useStores();
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-b">
-        <div className="mx-auto flex h-14 max-w-3xl items-center px-4">
-          <span className="text-base font-semibold">🏛️ Architecto</span>
-          <span className="ml-2 text-sm text-muted-foreground">
-            architecte logiciel IA
-          </span>
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
+    <div className="flex h-screen overflow-hidden bg-background">
+      {ui.sidebarOpen && <ConversationSidebar />}
+      <main className="relative flex min-w-0 flex-1 flex-col">
+        {!ui.sidebarOpen && (
+          <button
+            type="button"
+            onClick={() => ui.toggleSidebar()}
+            className="absolute left-3 top-3 z-10 rounded-md border border-border bg-card/80 p-1.5 text-muted-foreground shadow-sm backdrop-blur transition-colors hover:bg-accent hover:text-foreground"
+            title="Ouvrir la barre latérale"
+            aria-label="Ouvrir la barre latérale"
+          >
+            <PanelLeft className="size-4" />
+          </button>
+        )}
         <Outlet />
       </main>
     </div>
   );
-}
+});

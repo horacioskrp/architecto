@@ -11,11 +11,12 @@ export interface ChatResponse {
 export async function sendChat(
   message: string,
   threadId = "default",
+  project = "",
 ): Promise<ChatResponse> {
   const res = await fetch(`${BASE}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, thread_id: threadId }),
+    body: JSON.stringify({ message, thread_id: threadId, project }),
   });
   if (!res.ok) {
     throw new Error(`Erreur API : ${res.status}`);

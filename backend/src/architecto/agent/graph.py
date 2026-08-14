@@ -40,10 +40,13 @@ def build_graph():
     return graph.compile(checkpointer=MemorySaver())
 
 
-async def run_agent(message: str, thread_id: str = "default") -> str:
-    """Exécute un tour de conversation et renvoie la réponse texte de l'agent."""
+async def run_agent(message: str, thread_id: str = "default", project: str = "") -> str:
+    """Exécute un tour de conversation et renvoie la réponse texte de l'agent.
+
+    `project` (optionnel) scope la mémoire long terme (save/recall_decisions).
+    """
     app = build_graph()
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {"configurable": {"thread_id": thread_id, "project": project}}
     result = await app.ainvoke(
         {"messages": [HumanMessage(content=message)], "context": ""},
         config=config,
