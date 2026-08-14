@@ -17,6 +17,19 @@ export const ChatPage = observer(function ChatPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <label htmlFor="project" className="text-xs text-muted-foreground">
+          Projet
+        </label>
+        <Input
+          id="project"
+          value={chat.project}
+          onChange={(e) => chat.setProject(e.target.value)}
+          placeholder="ex : erp-hospitalier (mémoire des décisions)"
+          className="h-8 max-w-xs text-xs"
+        />
+      </div>
+
       {chat.messages.length === 0 && (
         <p className="py-10 text-center text-sm text-muted-foreground">
           Décris ton besoin d'architecture pour démarrer la conversation.
