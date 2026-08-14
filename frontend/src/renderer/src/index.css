@@ -4,48 +4,57 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Palette « stone » chaude, proche de Claude Desktop (mode clair) */
+    --background: 48 20% 99%;
+    --foreground: 20 14% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 20 14% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
+    --popover-foreground: 20 14% 12%;
+    --primary: 24 10% 10%;
+    --primary-foreground: 48 20% 99%;
+    --secondary: 60 5% 96%;
+    --secondary-foreground: 24 10% 10%;
+    --muted: 60 5% 96%;
+    --muted-foreground: 25 5% 45%;
+    --accent: 60 5% 95%;
+    --accent-foreground: 24 10% 10%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
+    --border: 20 6% 90%;
+    --input: 20 6% 90%;
+    --ring: 24 6% 45%;
+    /* Accent argile (bouton d'envoi, éléments actifs) */
+    --clay: 16 56% 52%;
+    --clay-foreground: 0 0% 100%;
+    --sidebar: 48 20% 97%;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* Charbon chaud (mode sombre) */
+    --background: 20 8% 8%;
+    --foreground: 60 9% 92%;
+    --card: 20 7% 11%;
+    --card-foreground: 60 9% 92%;
+    --popover: 20 7% 11%;
+    --popover-foreground: 60 9% 92%;
+    --primary: 60 9% 92%;
+    --primary-foreground: 20 8% 10%;
+    --secondary: 20 6% 15%;
+    --secondary-foreground: 60 9% 92%;
+    --muted: 20 6% 15%;
+    --muted-foreground: 24 5% 64%;
+    --accent: 20 6% 17%;
+    --accent-foreground: 60 9% 92%;
+    --destructive: 0 62% 47%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --border: 20 5% 18%;
+    --input: 20 5% 20%;
+    --ring: 24 5% 55%;
+    --clay: 16 60% 58%;
+    --clay-foreground: 20 8% 10%;
+    --sidebar: 20 8% 10%;
   }
 }
 
@@ -53,7 +62,34 @@
   * {
     @apply border-border;
   }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  /* Scrollbar discrète et cohérente avec le thème */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
   }
 }

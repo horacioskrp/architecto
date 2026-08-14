@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
+import { MessageSquarePlus, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
 
@@ -8,35 +9,48 @@ export const ConversationSidebar = observer(function ConversationSidebar() {
   const { chat } = useStores();
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r bg-muted/30">
-      <div className="p-3">
-        <Button className="w-full" onClick={() => chat.newConversation()}>
-          + Nouvelle conversation
-        </Button>
+    <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
+      <div className="flex items-center gap-2 px-4 py-3.5">
+        <span className="text-lg">🏛️</span>
+        <div className="flex flex-col leading-tight">
+          <span className="text-sm font-semibold">Architecto</span>
+          <span className="text-[11px] text-muted-foreground">architecte logiciel IA</span>
+        </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 pb-3">
-        <ul className="flex flex-col gap-1">
+      <div className="px-3 pb-2">
+        <button
+          type="button"
+          onClick={() => chat.newConversation()}
+          className="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent"
+        >
+          <MessageSquarePlus className="size-4" />
+          Nouvelle conversation
+        </button>
+      </div>
+
+      <nav className="scrollbar-thin flex-1 overflow-y-auto px-2 pb-2">
+        <ul className="flex flex-col gap-0.5">
           {chat.conversations.map((c) => (
             <li key={c.id}>
               <div
                 className={cn(
-                  "group flex items-center gap-1 rounded-md px-2 py-2 text-sm",
+                  "group flex items-center gap-1 rounded-lg px-2.5 py-2 text-sm transition-colors",
                   c.id === chat.activeId
-                    ? "bg-primary/10 text-primary"
-                    : "hover:bg-muted",
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                 )}
               >
                 <button
                   type="button"
                   onClick={() => chat.selectConversation(c.id)}
-                  className="min-w-0 flex-1 truncate text-left"
+                  className="flex min-w-0 flex-1 flex-col items-start text-left"
                   title={c.title}
                 >
-                  {c.title}
+                  <span className="w-full truncate">{c.title}</span>
                   {c.project && (
-                    <span className="ml-1 text-xs text-muted-foreground">
-                      · {c.project}
+                    <span className="w-full truncate text-[11px] text-muted-foreground">
+                      {c.project}
                     </span>
                   )}
                 </button>
@@ -44,15 +58,19 @@ export const ConversationSidebar = observer(function ConversationSidebar() {
                   type="button"
                   aria-label="Supprimer la conversation"
                   onClick={() => chat.deleteConversation(c.id)}
-                  className="shrink-0 text-muted-foreground opacity-0 transition hover:text-destructive group-hover:opacity-100"
+                  className="shrink-0 rounded p-1 text-muted-foreground opacity-0 transition hover:text-destructive focus:opacity-100 group-hover:opacity-100"
                 >
-                  ✕
+                  <Trash2 className="size-3.5" />
                 </button>
               </div>
             </li>
           ))}
         </ul>
       </nav>
+
+      <div className="border-t border-border p-2">
+        <ThemeToggle />
+      </div>
     </aside>
   );
 });
