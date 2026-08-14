@@ -16,10 +16,18 @@ def make_index() -> PGVectorDecisionIndex:
     return PGVectorDecisionIndex()
 
 
-def _thread_id(config: RunnableConfig | None) -> str | None:
+def _configurable(config: RunnableConfig | None, key: str) -> str | None:
     if not config:
         return None
-    return (config.get("configurable") or {}).get("thread_id")
+    return (config.get("configurable") or {}).get(key)
+
+
+def _resolve(project: str, config: RunnableConfig | None) -> str:
+    """Projet effectif : arg outil > `project` de la config (front) > thread_id."""
+    return resolve_project(
+        project or _configurable(config, "project"),
+        _configurable(config, "thread_id"),
+    )
 
 
 @tool
@@ -37,7 +45,7 @@ def save_decision(
     À utiliser dès qu'une décision structurante est prise (choix de stack, découpage,
     sécurité...). `project` : slug du projet (sinon rattaché à la conversation courante).
     """
-    project_slug = resolve_project(project or None, _thread_id(config))
+    project_slug = _resolve(project, config)
     decision_id = service.save_decision(
         make_store(),
         make_index(),
@@ -63,7 +71,7 @@ def recall_decisions(
     Avec `query`, classe par pertinence (récence + similarité) ; sinon liste les plus
     récentes. `project` : slug (sinon conversation courante).
     """
-    project_slug = resolve_project(project or None, _thread_id(config))
+    project_slug = _resolve(project, config)
     return service.recall_decisions(
         make_store(), make_index(), project=project_slug, query=query, k=k
     )

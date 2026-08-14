@@ -97,6 +97,18 @@ def test_tool_save_utilise_thread_id_si_pas_de_projet(monkeypatch):
     assert store.last_project == "erp-hospitalier"
 
 
+def test_tool_save_project_de_la_config_prime_sur_thread(monkeypatch):
+    store, index = FakeStore(), FakeIndex()
+    monkeypatch.setattr(tools, "make_store", lambda: store)
+    monkeypatch.setattr(tools, "make_index", lambda: index)
+
+    tools.save_decision.invoke(
+        {"title": "T", "context": "c", "decision": "d", "consequences": "cq"},
+        config={"configurable": {"thread_id": "conv-1", "project": "erp"}},
+    )
+    assert store.last_project == "erp"  # project (front) prime sur thread_id
+
+
 def test_tool_save_projet_explicite_prioritaire(monkeypatch):
     store, index = FakeStore(), FakeIndex()
     monkeypatch.setattr(tools, "make_store", lambda: store)
