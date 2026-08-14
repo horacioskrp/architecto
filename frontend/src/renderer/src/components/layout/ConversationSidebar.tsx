@@ -1,21 +1,28 @@
 import { observer } from "mobx-react-lite";
-import { MessageSquarePlus, Trash2 } from "lucide-react";
+import { MessageSquarePlus, PanelLeftClose, Trash2 } from "lucide-react";
 
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
 
 export const ConversationSidebar = observer(function ConversationSidebar() {
-  const { chat } = useStores();
+  const { chat, ui } = useStores();
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
-      <div className="flex items-center gap-2 px-4 py-3.5">
-        <span className="text-lg">🏛️</span>
-        <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold">Architecto</span>
-          <span className="text-[11px] text-muted-foreground">architecte logiciel IA</span>
-        </div>
+      <div className="flex items-center justify-between px-4 py-3.5">
+        <span className="text-sm font-semibold lowercase tracking-tight">
+          architecto
+        </span>
+        <button
+          type="button"
+          onClick={() => ui.toggleSidebar()}
+          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          title="Fermer la barre latérale"
+          aria-label="Fermer la barre latérale"
+        >
+          <PanelLeftClose className="size-4" />
+        </button>
       </div>
 
       <div className="px-3 pb-2">
