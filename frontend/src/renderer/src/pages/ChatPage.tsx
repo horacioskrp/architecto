@@ -16,6 +16,9 @@ export const ChatPage = observer(function ChatPage() {
   }, [count, chat.loading, chat.activeId]);
 
   const empty = count === 0;
+  const last = chat.messages[count - 1];
+  // Indicateur d'attente : uniquement avant l'arrivée du premier token.
+  const thinking = chat.loading && (!last || last.content.length === 0);
 
   return (
     <div className="flex h-full flex-col">
@@ -37,7 +40,7 @@ export const ChatPage = observer(function ChatPage() {
             {chat.messages.map((m, i) => (
               <Message key={i} role={m.role} content={m.content} />
             ))}
-            {chat.loading && (
+            {thinking && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="size-2 animate-pulse rounded-full bg-clay" />
                 Architecto réfléchit…
