@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -12,7 +13,11 @@ from architecto.features.knowledge.ingestion.chunking import (
     chunk_id,
     content_hash,
 )
-from architecto.features.knowledge.ingestion.loaders import iter_files, load_file
+from architecto.features.knowledge.ingestion.loaders import (
+    LoadedDocument,
+    iter_files,
+    load_file,
+)
 
 
 @dataclass
@@ -67,14 +72,27 @@ class Ingestor:
     def ingest_path(self, root: Path, *, reset: bool = False) -> IngestSummary:
         summary = IngestSummary()
         if reset:
-            self._index.clear()
-            self._store.clear()
+            self._reset()
         for path in iter_files(root):
-            self._ingest_file(path, summary)
+            self._ingest_doc(load_file(path), summary)
         return summary
 
-    def _ingest_file(self, path: Path, summary: IngestSummary) -> None:
-        doc = load_file(path)
+    def ingest_documents(
+        self, docs: Iterable[LoadedDocument], *, reset: bool = False
+    ) -> IngestSummary:
+        """Ingère des documents déjà chargés (ex. téléversés depuis le client)."""
+        summary = IngestSummary()
+        if reset:
+            self._reset()
+        for doc in docs:
+            self._ingest_doc(doc, summary)
+        return summary
+
+    def _reset(self) -> None:
+        self._index.clear()
+        self._store.clear()
+
+    def _ingest_doc(self, doc: LoadedDocument | None, summary: IngestSummary) -> None:
         if doc is None:  # format non supporté (déjà filtré) ou contenu vide
             summary.skipped_empty += 1
             return

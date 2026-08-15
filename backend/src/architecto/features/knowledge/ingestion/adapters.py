@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from sqlalchemy import create_engine, delete, select
 from sqlalchemy.orm import Session
 
@@ -8,6 +10,15 @@ from architecto.features.knowledge.ingestion.chunking import Chunk
 from architecto.features.knowledge.ingestion.ingestor import SourceRecord
 from architecto.features.knowledge.models import Document
 from architecto.features.knowledge.vectorstore import get_vectorstore
+
+
+@dataclass
+class SourceInfo:
+    """Vue d'une source ingérée, pour l'affichage/gestion côté client."""
+
+    source: str
+    title: str
+    chunk_count: int
 
 
 class SqlDocumentStore:
@@ -45,6 +56,25 @@ class SqlDocumentStore:
         with Session(self._engine) as session:
             session.execute(delete(Document))
             session.commit()
+
+    def list_all(self) -> list[SourceInfo]:
+        """Toutes les sources ingérées, les plus récentes d'abord."""
+        with Session(self._engine) as session:
+            docs = session.scalars(
+                select(Document).order_by(Document.updated_at.desc())
+            ).all()
+            return [SourceInfo(d.source, d.title, d.chunk_count) for d in docs]
+
+    def remove(self, source: str) -> int | None:
+        """Supprime la trace d'une source. Renvoie son `chunk_count`, ou None si absente."""
+        with Session(self._engine) as session:
+            doc = session.scalar(select(Document).where(Document.source == source))
+            if doc is None:
+                return None
+            count = doc.chunk_count
+            session.delete(doc)
+            session.commit()
+            return count
 
 
 class PGVectorIndex:
