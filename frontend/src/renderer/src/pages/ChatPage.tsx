@@ -2,9 +2,18 @@ import { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Composer } from "@/components/chat/Composer";
+import { MessageActions } from "@/components/chat/MessageActions";
+import { ErrorBoundary, InlineErrorFallback } from "@/components/ErrorBoundary";
 import { Markdown } from "@/components/markdown/Markdown";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
+
+const STARTERS = [
+  "Conçois une architecture microservices pour une marketplace",
+  "Rédige un ADR pour choisir entre PostgreSQL et MongoDB",
+  "Propose un schéma de base de données pour un système de réservation",
+  "Analyse les compromis d'une architecture hexagonale",
+];
 
 export const ChatPage = observer(function ChatPage() {
   const { chat } = useStores();
@@ -28,23 +37,56 @@ export const ChatPage = observer(function ChatPage() {
       <div className="scrollbar-thin flex-1 overflow-y-auto">
         {empty ? (
           <div className="mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-4 text-center">
-            <span className="mb-4 text-4xl">🏛️</span>
             <h1 className="text-2xl font-semibold tracking-tight">
               Comment puis-je t'aider à concevoir ?
             </h1>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              Décris ton besoin d'architecture — diagrammes, ADR, choix de
-              base de données, revue de dépendances. Associe un projet pour
-              que je me souvienne de tes décisions.
+              Décris ton besoin d'architecture, diagrammes, ADR, choix de base
+              de données, revue de dépendances. Associe un projet pour que je
+              me souvienne de tes décisions.
             </p>
+            <div className="mt-6 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
+              {STARTERS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => void chat.sendText(prompt)}
+                  className="rounded-xl border border-border bg-card px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:border-muted-foreground/40 hover:bg-accent hover:text-foreground"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
+          <div
+            className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8"
+            aria-live="polite"
+            aria-relevant="additions text"
+          >
             {chat.messages.map((m, i) => (
-              <Message key={i} role={m.role} content={m.content} />
+              <div key={i} className="group/msg">
+                <ErrorBoundary
+                  fallback={(error, reset) => (
+                    <InlineErrorFallback error={error} reset={reset} />
+                  )}
+                >
+                  <Message role={m.role} content={m.content} />
+                </ErrorBoundary>
+                {m.role === "assistant" && m.content && (
+                  <MessageActions
+                    content={m.content}
+                    canRegenerate={i === count - 1 && !chat.loading}
+                    onRegenerate={() => void chat.regenerate()}
+                  />
+                )}
+              </div>
             ))}
             {status && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div
+                role="status"
+                className="flex items-center gap-2 text-sm text-muted-foreground"
+              >
                 <span className="size-2 animate-pulse rounded-full bg-clay" />
                 {chat.activity ? `⚙️ ${status}…` : status}
               </div>

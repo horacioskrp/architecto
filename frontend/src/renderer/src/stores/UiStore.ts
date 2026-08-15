@@ -5,6 +5,7 @@ const KEY = "architecto.sidebarOpen";
 export class UiStore {
   sidebarOpen = true;
   knowledgeOpen = false;
+  decisionsOpen = false;
 
   constructor() {
     const saved = localStorage.getItem(KEY);
@@ -28,5 +29,13 @@ export class UiStore {
 
   closeKnowledge(): void {
     this.knowledgeOpen = false;
+  }
+
+  openDecisions(): void {
+    this.decisionsOpen = true;
+  }
+
+  closeDecisions(): void {
+    this.decisionsOpen = false;
   }
 }

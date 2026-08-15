@@ -1,12 +1,19 @@
 // En Electron il n'y a pas de proxy nginx : on appelle le backend en URL absolue.
 // Surchargeable au build via VITE_API_BASE_URL.
+import type { components } from "@/api/schema";
+
 const API_HOST = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 const BASE = `${API_HOST}/api/v1`;
 
-export interface ChatResponse {
-  thread_id: string;
-  answer: string;
-}
+// Types dérivés de l'OpenAPI du backend (fichier généré `schema.d.ts`, via le
+// script `gen:api`). Source de vérité unique : pas de dérive front/back.
+type Schemas = components["schemas"];
+
+export type ChatResponse = Schemas["ChatResponse"];
+export type KnowledgeSource = Schemas["SourceOut"];
+export type IngestResult = Schemas["IngestResult"];
+export type DecisionProject = Schemas["ProjectOut"];
+export type Decision = Schemas["DecisionOut"];
 
 export async function sendChat(
   message: string,
@@ -97,20 +104,6 @@ export async function streamChat(
 
 // --- Base de connaissances (RAG) --------------------------------------------
 
-export interface KnowledgeSource {
-  source: string;
-  title: string;
-  chunk_count: number;
-}
-
-export interface IngestResult {
-  processed: number;
-  skipped_unchanged: number;
-  skipped_empty: number;
-  chunks: number;
-  rejected: string[];
-}
-
 export async function ingestFiles(files: File[]): Promise<IngestResult> {
   const form = new FormData();
   for (const file of files) form.append("files", file, file.name);
@@ -128,7 +121,7 @@ export async function ingestFiles(files: File[]): Promise<IngestResult> {
 export async function listSources(): Promise<KnowledgeSource[]> {
   const res = await fetch(`${BASE}/knowledge/sources`);
   if (!res.ok) throw new Error(`Erreur API : ${res.status}`);
-  const data = (await res.json()) as { sources: KnowledgeSource[] };
+  const data = (await res.json()) as Schemas["SourcesList"];
   return data.sources;
 }
 
@@ -138,4 +131,21 @@ export async function deleteSource(source: string): Promise<void> {
   if (!res.ok && res.status !== 204) {
     throw new Error(`Erreur suppression : ${res.status}`);
   }
+}
+
+// --- Mémoire : décisions d'architecture (ADR) -------------------------------
+
+export async function listDecisionProjects(): Promise<DecisionProject[]> {
+  const res = await fetch(`${BASE}/memory/projects`);
+  if (!res.ok) throw new Error(`Erreur API : ${res.status}`);
+  const data = (await res.json()) as Schemas["ProjectsList"];
+  return data.projects;
+}
+
+export async function listDecisions(project: string): Promise<Decision[]> {
+  const url = `${BASE}/memory/decisions?project=${encodeURIComponent(project)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Erreur API : ${res.status}`);
+  const data = (await res.json()) as Schemas["DecisionsList"];
+  return data.decisions;
 }

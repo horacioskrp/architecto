@@ -16,6 +16,15 @@ class StoredDecision:
     consequences: str
 
 
+@dataclass
+class ProjectSummary:
+    """Projet + nombre de décisions (pour l'affichage côté client)."""
+
+    slug: str
+    name: str
+    decision_count: int
+
+
 class DecisionStore(Protocol):
     """Persistance des décisions (source de vérité SQL)."""
 

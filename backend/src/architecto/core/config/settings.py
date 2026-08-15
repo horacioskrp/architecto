@@ -3,6 +3,7 @@ from functools import lru_cache
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
+from architecto.core.config.agent import AgentSettings
 from architecto.core.config.app import AppSettings
 from architecto.core.config.cors import CORSSettings
 from architecto.core.config.database import DatabaseSettings
@@ -20,6 +21,7 @@ class Settings(BaseSettings):
     """
 
     app: AppSettings = Field(default_factory=AppSettings)
+    agent: AgentSettings = Field(default_factory=AgentSettings)
     db: DatabaseSettings = Field(default_factory=DatabaseSettings)
     llm: ChatModelSettings = Field(default_factory=ChatModelSettings)
     embeddings: EmbeddingSettings = Field(default_factory=EmbeddingSettings)

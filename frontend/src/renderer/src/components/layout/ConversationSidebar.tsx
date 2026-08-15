@@ -1,6 +1,13 @@
 import { observer } from "mobx-react-lite";
-import { Library, MessageSquarePlus, PanelLeftClose, Trash2 } from "lucide-react";
+import {
+  FileText,
+  Library,
+  MessageSquarePlus,
+  PanelLeftClose,
+  Trash2,
+} from "lucide-react";
 
+import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
@@ -11,9 +18,7 @@ export const ConversationSidebar = observer(function ConversationSidebar() {
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
       <div className="flex items-center justify-between px-4 py-3.5">
-        <span className="text-sm font-semibold lowercase tracking-tight">
-          architecto
-        </span>
+        <Logo className="h-5 w-auto" />
         <button
           type="button"
           onClick={() => ui.toggleSidebar()}
@@ -84,6 +89,15 @@ export const ConversationSidebar = observer(function ConversationSidebar() {
         >
           <Library className="size-4" />
           Base de connaissances
+        </button>
+        <button
+          type="button"
+          onClick={() => ui.openDecisions()}
+          className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          title="Consulter les décisions d'architecture mémorisées"
+        >
+          <FileText className="size-4" />
+          Décisions
         </button>
         <ThemeToggle />
       </div>
