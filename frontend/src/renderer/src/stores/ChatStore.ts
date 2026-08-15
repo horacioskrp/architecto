@@ -2,6 +2,7 @@ import { makeAutoObservable, reaction, runInAction } from "mobx";
 
 import { streamChat } from "@/api/client";
 import { loadConversations, saveConversations } from "@/lib/storage";
+import { toolLabel } from "@/lib/toolLabels";
 
 export type MessageRole = "user" | "assistant" | "error";
 
@@ -30,6 +31,7 @@ export class ChatStore {
   activeId = "";
   input = "";
   loading = false;
+  activity = ""; // libellé de l'outil en cours (transparence pendant le flux)
   private controller: AbortController | null = null;
 
   constructor() {
@@ -120,18 +122,23 @@ export class ChatStore {
     this.loading = true;
     this.controller = new AbortController();
 
-    const setContent = (fn: (prev: string) => string) =>
-      runInAction(() => {
-        conv.messages[idx].content = fn(conv.messages[idx].content);
-      });
-
     try {
       await streamChat(
         text,
         conv.id,
         conv.project,
         {
-          onDelta: (t) => setContent((prev) => prev + t),
+          onDelta: (t) => {
+            runInAction(() => {
+              this.activity = ""; // du texte arrive : l'outil n'est plus en cours
+              conv.messages[idx].content += t;
+            });
+          },
+          onTool: (name, phase) => {
+            runInAction(() => {
+              this.activity = phase === "start" ? toolLabel(name) : "";
+            });
+          },
           onError: (e) => {
             runInAction(() => {
               if (conv.messages[idx].content) {
@@ -168,6 +175,7 @@ export class ChatStore {
         ) {
           conv.messages.splice(idx, 1);
         }
+        this.activity = "";
         this.loading = false;
         this.controller = null;
       });
