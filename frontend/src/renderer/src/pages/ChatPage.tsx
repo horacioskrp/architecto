@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Composer } from "@/components/chat/Composer";
+import { ErrorBoundary, InlineErrorFallback } from "@/components/ErrorBoundary";
 import { Markdown } from "@/components/markdown/Markdown";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
@@ -40,7 +41,14 @@ export const ChatPage = observer(function ChatPage() {
         ) : (
           <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
             {chat.messages.map((m, i) => (
-              <Message key={i} role={m.role} content={m.content} />
+              <ErrorBoundary
+                key={i}
+                fallback={(error, reset) => (
+                  <InlineErrorFallback error={error} reset={reset} />
+                )}
+              >
+                <Message role={m.role} content={m.content} />
+              </ErrorBoundary>
             ))}
             {status && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
