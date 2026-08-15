@@ -59,7 +59,11 @@ export const ChatPage = observer(function ChatPage() {
             </div>
           </div>
         ) : (
-          <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
+          <div
+            className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8"
+            aria-live="polite"
+            aria-relevant="additions text"
+          >
             {chat.messages.map((m, i) => (
               <div key={i} className="group/msg">
                 <ErrorBoundary
@@ -79,7 +83,10 @@ export const ChatPage = observer(function ChatPage() {
               </div>
             ))}
             {status && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div
+                role="status"
+                className="flex items-center gap-2 text-sm text-muted-foreground"
+              >
                 <span className="size-2 animate-pulse rounded-full bg-clay" />
                 {chat.activity ? `⚙️ ${status}…` : status}
               </div>

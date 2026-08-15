@@ -1,9 +1,26 @@
+import { lazy, Suspense } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { cn } from "@/lib/utils";
-import { CodeBlock } from "./CodeBlock";
-import { Mermaid } from "./Mermaid";
+
+// Code-splitting : react-syntax-highlighter et mermaid sont lourds. On ne les
+// charge que lorsqu'un message contient réellement un bloc de code / diagramme.
+const CodeBlock = lazy(() =>
+  import("./CodeBlock").then((m) => ({ default: m.CodeBlock })),
+);
+const Mermaid = lazy(() =>
+  import("./Mermaid").then((m) => ({ default: m.Mermaid })),
+);
+
+/** Repli affiché pendant le chargement du composant lourd : le code brut. */
+function RawCode({ value }: { value: string }) {
+  return (
+    <pre className="my-2 overflow-x-auto rounded-md border bg-muted p-3 text-xs">
+      {value}
+    </pre>
+  );
+}
 
 export function Markdown({ content }: { content: string }) {
   return (
@@ -25,9 +42,17 @@ export function Markdown({ content }: { content: string }) {
             if (match) {
               const language = match[1];
               if (language === "mermaid") {
-                return <Mermaid chart={value} />;
+                return (
+                  <Suspense fallback={<RawCode value={value} />}>
+                    <Mermaid chart={value} />
+                  </Suspense>
+                );
               }
-              return <CodeBlock language={language} value={value} />;
+              return (
+                <Suspense fallback={<RawCode value={value} />}>
+                  <CodeBlock language={language} value={value} />
+                </Suspense>
+              );
             }
             return (
               <code
