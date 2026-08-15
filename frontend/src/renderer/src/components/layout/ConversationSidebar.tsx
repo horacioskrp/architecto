@@ -7,6 +7,7 @@ import {
   Trash2,
 } from "lucide-react";
 
+import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
@@ -17,9 +18,7 @@ export const ConversationSidebar = observer(function ConversationSidebar() {
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-sidebar">
       <div className="flex items-center justify-between px-4 py-3.5">
-        <span className="text-sm font-semibold lowercase tracking-tight">
-          architecto
-        </span>
+        <Logo className="h-5 w-auto" />
         <button
           type="button"
           onClick={() => ui.toggleSidebar()}

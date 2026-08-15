@@ -28,14 +28,13 @@ export const ChatPage = observer(function ChatPage() {
       <div className="scrollbar-thin flex-1 overflow-y-auto">
         {empty ? (
           <div className="mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-4 text-center">
-            <span className="mb-4 text-4xl">🏛️</span>
             <h1 className="text-2xl font-semibold tracking-tight">
               Comment puis-je t'aider à concevoir ?
             </h1>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              Décris ton besoin d'architecture — diagrammes, ADR, choix de
-              base de données, revue de dépendances. Associe un projet pour
-              que je me souvienne de tes décisions.
+              Décris ton besoin d'architecture, diagrammes, ADR, choix de base
+              de données, revue de dépendances. Associe un projet pour que je
+              me souvienne de tes décisions.
             </p>
           </div>
         ) : (
