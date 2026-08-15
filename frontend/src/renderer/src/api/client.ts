@@ -85,3 +85,48 @@ export async function streamChat(
     }
   }
 }
+
+// --- Base de connaissances (RAG) --------------------------------------------
+
+export interface KnowledgeSource {
+  source: string;
+  title: string;
+  chunk_count: number;
+}
+
+export interface IngestResult {
+  processed: number;
+  skipped_unchanged: number;
+  skipped_empty: number;
+  chunks: number;
+  rejected: string[];
+}
+
+export async function ingestFiles(files: File[]): Promise<IngestResult> {
+  const form = new FormData();
+  for (const file of files) form.append("files", file, file.name);
+  const res = await fetch(`${BASE}/knowledge/ingest`, {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Erreur ingestion : ${res.status} ${detail}`.trim());
+  }
+  return res.json() as Promise<IngestResult>;
+}
+
+export async function listSources(): Promise<KnowledgeSource[]> {
+  const res = await fetch(`${BASE}/knowledge/sources`);
+  if (!res.ok) throw new Error(`Erreur API : ${res.status}`);
+  const data = (await res.json()) as { sources: KnowledgeSource[] };
+  return data.sources;
+}
+
+export async function deleteSource(source: string): Promise<void> {
+  const url = `${BASE}/knowledge/sources?source=${encodeURIComponent(source)}`;
+  const res = await fetch(url, { method: "DELETE" });
+  if (!res.ok && res.status !== 204) {
+    throw new Error(`Erreur suppression : ${res.status}`);
+  }
+}
