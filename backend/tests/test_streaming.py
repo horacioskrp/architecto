@@ -54,12 +54,31 @@ async def test_stream_relaie_les_tokens_du_noeud_agent(monkeypatch):
         _delta_event("{", node="triage"),  # sortie structurée du triage -> ignorée
         _delta_event("Archi"),
         _delta_event("tecto"),
-        {"event": "on_tool_start", "metadata": {}, "data": {}},  # bruit -> ignoré
     ]
     monkeypatch.setattr(graph, "build_graph", lambda: _FakeGraph(events))
 
     out = await _collect(stream_agent("salut", thread_id="t", project="p"))
-    assert out == ["Archi", "tecto"]
+    assert out == [
+        {"type": "delta", "text": "Archi"},
+        {"type": "delta", "text": "tecto"},
+    ]
+
+
+@pytest.mark.asyncio
+async def test_stream_relaie_les_evenements_outils(monkeypatch):
+    events = [
+        {"event": "on_tool_start", "name": "generate_diagram", "metadata": {}, "data": {}},
+        {"event": "on_tool_end", "name": "generate_diagram", "metadata": {}, "data": {}},
+        _delta_event("Voici"),
+    ]
+    monkeypatch.setattr(graph, "build_graph", lambda: _FakeGraph(events))
+
+    out = await _collect(stream_agent("diagramme"))
+    assert out == [
+        {"type": "tool", "name": "generate_diagram", "phase": "start"},
+        {"type": "tool", "name": "generate_diagram", "phase": "end"},
+        {"type": "delta", "text": "Voici"},
+    ]
 
 
 @pytest.mark.asyncio
@@ -69,7 +88,7 @@ async def test_stream_fallback_emet_le_message_final(monkeypatch):
     monkeypatch.setattr(graph, "build_graph", lambda: _FakeGraph([], final=final))
 
     out = await _collect(stream_agent("salut"))
-    assert out == ["Il me manque des précisions."]
+    assert out == [{"type": "delta", "text": "Il me manque des précisions."}]
 
 
 @pytest.mark.asyncio

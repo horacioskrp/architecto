@@ -26,20 +26,21 @@ def _sse(event: dict) -> str:
 
 @router.post("/stream")
 async def chat_stream(payload: ChatRequest) -> StreamingResponse:
-    """Diffuse la réponse de l'agent token par token (Server-Sent Events).
+    """Diffuse la réponse de l'agent (Server-Sent Events).
 
-    Évènements émis : `{type:"delta", text}`, puis `{type:"done", thread_id}`,
+    Évènements émis : `{type:"tool", name, phase}` (activité d'outil),
+    `{type:"delta", text}` (tokens), puis `{type:"done", thread_id}`,
     ou `{type:"error", message}` en cas d'échec.
     """
 
     async def event_source() -> AsyncIterator[str]:
         try:
-            async for delta in stream_agent(
+            async for event in stream_agent(
                 message=payload.message,
                 thread_id=payload.thread_id,
                 project=payload.project,
             ):
-                yield _sse({"type": "delta", "text": delta})
+                yield _sse(event)
             yield _sse({"type": "done", "thread_id": payload.thread_id})
         except Exception as exc:  # noqa: BLE001 — surface l'erreur au client
             yield _sse({"type": "error", "message": str(exc)})

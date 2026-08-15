@@ -75,8 +75,13 @@ async def run_agent(message: str, thread_id: str = "default", project: str = "")
 
 async def stream_agent(
     message: str, thread_id: str = "default", project: str = ""
-) -> AsyncIterator[str]:
-    """Diffuse la réponse de l'agent en flux de deltas texte.
+) -> AsyncIterator[dict]:
+    """Diffuse la réponse de l'agent en flux d'évènements structurés.
+
+    Types émis :
+    - `{"type": "tool", "name": <outil>, "phase": "start"|"end"}` — activité d'outil,
+      pour la transparence côté client ;
+    - `{"type": "delta", "text": <str>}` — tokens de la réponse finale.
 
     On ne relaie que les tokens du nœud `agent` (le triage utilise une sortie
     structurée, à ignorer). Si aucun token n'a été diffusé — chemin `clarify`
@@ -88,14 +93,18 @@ async def stream_agent(
 
     streamed = False
     async for event in app.astream_events(inputs, config=config, version="v2"):
-        if event.get("event") != "on_chat_model_stream":
-            continue
-        if event.get("metadata", {}).get("langgraph_node") != "agent":
-            continue
-        delta = _text(event["data"]["chunk"].content)
-        if delta:
-            streamed = True
-            yield delta
+        kind = event.get("event")
+        if kind == "on_tool_start":
+            yield {"type": "tool", "name": event.get("name", ""), "phase": "start"}
+        elif kind == "on_tool_end":
+            yield {"type": "tool", "name": event.get("name", ""), "phase": "end"}
+        elif kind == "on_chat_model_stream":
+            if event.get("metadata", {}).get("langgraph_node") != "agent":
+                continue
+            delta = _text(event["data"]["chunk"].content)
+            if delta:
+                streamed = True
+                yield {"type": "delta", "text": delta}
 
     if not streamed:
         snapshot = await app.aget_state(config)
@@ -103,4 +112,4 @@ async def stream_agent(
         if messages:
             content = _text(messages[-1].content)
             if content:
-                yield content
+                yield {"type": "delta", "text": content}

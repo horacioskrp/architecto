@@ -26,6 +26,7 @@ export async function sendChat(
 
 export interface StreamHandlers {
   onDelta: (text: string) => void;
+  onTool?: (name: string, phase: "start" | "end") => void;
   onDone?: () => void;
   onError?: (error: Error) => void;
 }
@@ -71,14 +72,22 @@ export async function streamChat(
       const raw = line.slice(5).trim();
       if (!raw) continue;
 
-      let evt: { type: string; text?: string; message?: string };
+      let evt: {
+        type: string;
+        text?: string;
+        message?: string;
+        name?: string;
+        phase?: "start" | "end";
+      };
       try {
         evt = JSON.parse(raw);
       } catch {
         continue;
       }
       if (evt.type === "delta" && evt.text) handlers.onDelta(evt.text);
-      else if (evt.type === "done") handlers.onDone?.();
+      else if (evt.type === "tool" && evt.name && evt.phase) {
+        handlers.onTool?.(evt.name, evt.phase);
+      } else if (evt.type === "done") handlers.onDone?.();
       else if (evt.type === "error") {
         handlers.onError?.(new Error(evt.message ?? "Erreur inconnue"));
       }
