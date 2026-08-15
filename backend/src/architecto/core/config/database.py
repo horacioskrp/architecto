@@ -33,3 +33,11 @@ class DatabaseSettings(SectionSettings):
             f"{self.driver}://{self.user}:{self.password.get_secret_value()}"
             f"@{self.host}:{self.port}/{self.name}"
         )
+
+    @property
+    def psycopg_dsn(self) -> str:
+        """DSN psycopg « nu » (sans driver SQLAlchemy) — requis par AsyncPostgresSaver."""
+        return (
+            f"postgresql://{self.user}:{self.password.get_secret_value()}"
+            f"@{self.host}:{self.port}/{self.name}"
+        )
