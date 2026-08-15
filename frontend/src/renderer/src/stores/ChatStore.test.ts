@@ -138,4 +138,27 @@ describe("ChatStore — send (flux mocké)", () => {
     expect(mockStream).not.toHaveBeenCalled();
     expect(s.messages).toHaveLength(0);
   });
+
+  it("sendText envoie le texte fourni (suggestions)", async () => {
+    mockStream.mockImplementation(async (_m, _i, _p, h) => h?.onDelta("ok"));
+    const s = new ChatStore();
+    await s.sendText("Prompt exemple");
+    expect(s.messages[0]).toMatchObject({ role: "user", content: "Prompt exemple" });
+    expect(s.active.title).toBe("Prompt exemple");
+  });
+
+  it("regenerate remplace la dernière réponse pour le même message user", async () => {
+    mockStream.mockImplementation(async (_m, _i, _p, h) => h?.onDelta("v1"));
+    const s = new ChatStore();
+    s.setInput("Question");
+    await s.send();
+    expect(s.messages.at(-1)?.content).toBe("v1");
+
+    mockStream.mockImplementation(async (_m, _i, _p, h) => h?.onDelta("v2"));
+    await s.regenerate();
+
+    expect(s.messages).toHaveLength(2); // 1 user + 1 assistant (régénérée)
+    expect(s.messages[0]).toMatchObject({ role: "user", content: "Question" });
+    expect(s.messages.at(-1)?.content).toBe("v2");
+  });
 });

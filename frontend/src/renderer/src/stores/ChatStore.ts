@@ -116,9 +116,30 @@ export class ChatStore {
     if (conv.messages.length === 1) {
       conv.title = text.length > 40 ? `${text.slice(0, 40)}…` : text;
     }
+    this.input = "";
+    await this.runStream(conv, text);
+  }
+
+  /** Envoie un texte donné (suggestions de l'état vide). */
+  sendText(text: string): Promise<void> {
+    this.input = text;
+    return this.send();
+  }
+
+  /** Relance la génération depuis le dernier message utilisateur. */
+  async regenerate(): Promise<void> {
+    if (this.loading) return;
+    const conv = this.active;
+    const lastUser = [...conv.messages].reverse().find((m) => m.role === "user");
+    if (!lastUser) return;
+    // retire l'ancienne réponse (tout ce qui suit le dernier message utilisateur)
+    conv.messages.splice(conv.messages.lastIndexOf(lastUser) + 1);
+    await this.runStream(conv, lastUser.content);
+  }
+
+  private async runStream(conv: Conversation, text: string): Promise<void> {
     // Bulle assistant vide qu'on remplit au fil du flux (index stable).
     const idx = conv.messages.push({ role: "assistant", content: "" }) - 1;
-    this.input = "";
     this.loading = true;
     this.controller = new AbortController();
 
