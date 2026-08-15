@@ -50,6 +50,35 @@ def load_file(path: Path) -> LoadedDocument | None:
     return LoadedDocument(source=str(path.resolve()), title=title or path.stem, text=text)
 
 
+def load_bytes(filename: str, data: bytes) -> LoadedDocument | None:
+    """Charge un document depuis des octets téléversés.
+
+    La `source` est le **nom de fichier d'origine** (et non un chemin temporaire) :
+    identité stable pour l'idempotence de la (ré)ingestion côté client.
+    """
+    ext = Path(filename).suffix.lower()
+    if ext not in SUPPORTED_EXTENSIONS:
+        return None
+
+    if ext in {".md", ".txt"}:
+        text = data.decode("utf-8", errors="ignore")
+        title = _markdown_title(text) if ext == ".md" else None
+    else:  # .pdf
+        from io import BytesIO
+
+        from pypdf import PdfReader
+
+        reader = PdfReader(BytesIO(data))
+        parts = [page.extract_text() or "" for page in reader.pages]
+        text = "\n\n".join(part for part in parts if part.strip())
+        title = None
+
+    text = text.strip()
+    if not text:
+        return None
+    return LoadedDocument(source=filename, title=title or Path(filename).stem, text=text)
+
+
 def _markdown_title(text: str) -> str | None:
     """Premier titre H1 (`# ...`) rencontré, sinon None."""
     for line in text.splitlines():

@@ -16,6 +16,12 @@ export const ChatPage = observer(function ChatPage() {
   }, [count, chat.loading, chat.activeId]);
 
   const empty = count === 0;
+  const last = chat.messages[count - 1];
+  // Ligne de statut : activité d'outil, ou attente avant le premier token.
+  const status = chat.loading
+    ? chat.activity ||
+      (!last || last.content.length === 0 ? "Architecto réfléchit…" : "")
+    : "";
 
   return (
     <div className="flex h-full flex-col">
@@ -37,10 +43,10 @@ export const ChatPage = observer(function ChatPage() {
             {chat.messages.map((m, i) => (
               <Message key={i} role={m.role} content={m.content} />
             ))}
-            {chat.loading && (
+            {status && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="size-2 animate-pulse rounded-full bg-clay" />
-                Architecto réfléchit…
+                {chat.activity ? `⚙️ ${status}…` : status}
               </div>
             )}
             <div ref={endRef} />

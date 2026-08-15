@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { MessageSquarePlus, PanelLeftClose, Trash2 } from "lucide-react";
+import { Library, MessageSquarePlus, PanelLeftClose, Trash2 } from "lucide-react";
 
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
@@ -75,7 +75,16 @@ export const ConversationSidebar = observer(function ConversationSidebar() {
         </ul>
       </nav>
 
-      <div className="border-t border-border p-2">
+      <div className="flex flex-col border-t border-border p-2">
+        <button
+          type="button"
+          onClick={() => ui.openKnowledge()}
+          className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          title="Gérer les documents de la base de connaissances"
+        >
+          <Library className="size-4" />
+          Base de connaissances
+        </button>
         <ThemeToggle />
       </div>
     </aside>

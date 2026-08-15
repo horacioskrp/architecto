@@ -7,6 +7,7 @@ from architecto.core.config.app import AppSettings
 from architecto.core.config.cors import CORSSettings
 from architecto.core.config.database import DatabaseSettings
 from architecto.core.config.embeddings import EmbeddingSettings
+from architecto.core.config.knowledge import KnowledgeSettings
 from architecto.core.config.llm import ChatModelSettings
 from architecto.core.config.observability import LangSmithSettings
 
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
     db: DatabaseSettings = Field(default_factory=DatabaseSettings)
     llm: ChatModelSettings = Field(default_factory=ChatModelSettings)
     embeddings: EmbeddingSettings = Field(default_factory=EmbeddingSettings)
+    knowledge: KnowledgeSettings = Field(default_factory=KnowledgeSettings)
     langsmith: LangSmithSettings = Field(default_factory=LangSmithSettings)
     cors: CORSSettings = Field(default_factory=CORSSettings)
 

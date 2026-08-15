@@ -1,7 +1,8 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 
-import { sendChat } from "@/api/client";
+import { streamChat } from "@/api/client";
 import { loadConversations, saveConversations } from "@/lib/storage";
+import { toolLabel } from "@/lib/toolLabels";
 
 export type MessageRole = "user" | "assistant" | "error";
 
@@ -30,6 +31,8 @@ export class ChatStore {
   activeId = "";
   input = "";
   loading = false;
+  activity = ""; // libellé de l'outil en cours (transparence pendant le flux)
+  private controller: AbortController | null = null;
 
   constructor() {
     const saved = loadConversations();
@@ -99,6 +102,11 @@ export class ChatStore {
     }
   }
 
+  /** Interrompt le streaming en cours (le texte déjà reçu est conservé). */
+  stop(): void {
+    this.controller?.abort();
+  }
+
   async send(): Promise<void> {
     const text = this.input.trim();
     if (!text || this.loading) return;
@@ -108,21 +116,68 @@ export class ChatStore {
     if (conv.messages.length === 1) {
       conv.title = text.length > 40 ? `${text.slice(0, 40)}…` : text;
     }
+    // Bulle assistant vide qu'on remplit au fil du flux (index stable).
+    const idx = conv.messages.push({ role: "assistant", content: "" }) - 1;
     this.input = "";
     this.loading = true;
+    this.controller = new AbortController();
 
     try {
-      const { answer } = await sendChat(text, conv.id, conv.project);
-      runInAction(() => {
-        conv.messages.push({ role: "assistant", content: answer });
-      });
+      await streamChat(
+        text,
+        conv.id,
+        conv.project,
+        {
+          onDelta: (t) => {
+            runInAction(() => {
+              this.activity = ""; // du texte arrive : l'outil n'est plus en cours
+              conv.messages[idx].content += t;
+            });
+          },
+          onTool: (name, phase) => {
+            runInAction(() => {
+              this.activity = phase === "start" ? toolLabel(name) : "";
+            });
+          },
+          onError: (e) => {
+            runInAction(() => {
+              if (conv.messages[idx].content) {
+                conv.messages[idx].content += `\n\n_(interrompu : ${e.message})_`;
+              } else {
+                conv.messages[idx].role = "error";
+                conv.messages[idx].content = e.message;
+              }
+            });
+          },
+        },
+        this.controller.signal,
+      );
     } catch (error) {
+      const aborted = error instanceof DOMException && error.name === "AbortError";
       runInAction(() => {
-        conv.messages.push({ role: "error", content: String(error) });
+        if (aborted) {
+          if (!conv.messages[idx].content) {
+            conv.messages.splice(idx, 1);
+          }
+        } else if (conv.messages[idx].content) {
+          conv.messages[idx].content += `\n\n_(interrompu : ${String(error)})_`;
+        } else {
+          conv.messages[idx].role = "error";
+          conv.messages[idx].content = String(error);
+        }
       });
     } finally {
       runInAction(() => {
+        // Retire une bulle assistant restée vide (aucun token, pas d'erreur).
+        if (
+          conv.messages[idx]?.role === "assistant" &&
+          !conv.messages[idx].content
+        ) {
+          conv.messages.splice(idx, 1);
+        }
+        this.activity = "";
         this.loading = false;
+        this.controller = null;
       });
     }
   }

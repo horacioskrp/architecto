@@ -3,6 +3,7 @@ import { PanelLeft } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
 import { ConversationSidebar } from "@/components/layout/ConversationSidebar";
+import { KnowledgeModal } from "@/components/knowledge/KnowledgeModal";
 import { useStores } from "@/stores/context";
 
 export const RootLayout = observer(function RootLayout() {
@@ -25,6 +26,7 @@ export const RootLayout = observer(function RootLayout() {
         )}
         <Outlet />
       </main>
+      <KnowledgeModal />
     </div>
   );
 });

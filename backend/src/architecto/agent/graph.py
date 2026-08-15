@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from functools import lru_cache
 
 from langchain_core.messages import HumanMessage
@@ -40,15 +41,75 @@ def build_graph():
     return graph.compile(checkpointer=MemorySaver())
 
 
+def _configize(thread_id: str, project: str) -> dict:
+    return {"configurable": {"thread_id": thread_id, "project": project}}
+
+
+def _text(content: object) -> str:
+    """Aplati le contenu d'un chunk (str ou blocs) en texte."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, dict):
+                parts.append(str(block.get("text", "")))
+            else:
+                parts.append(str(block))
+        return "".join(parts)
+    return str(content)
+
+
 async def run_agent(message: str, thread_id: str = "default", project: str = "") -> str:
     """Exécute un tour de conversation et renvoie la réponse texte de l'agent.
 
     `project` (optionnel) scope la mémoire long terme (save/recall_decisions).
     """
     app = build_graph()
-    config = {"configurable": {"thread_id": thread_id, "project": project}}
     result = await app.ainvoke(
         {"messages": [HumanMessage(content=message)], "context": ""},
-        config=config,
+        config=_configize(thread_id, project),
     )
     return result["messages"][-1].content
+
+
+async def stream_agent(
+    message: str, thread_id: str = "default", project: str = ""
+) -> AsyncIterator[dict]:
+    """Diffuse la réponse de l'agent en flux d'évènements structurés.
+
+    Types émis :
+    - `{"type": "tool", "name": <outil>, "phase": "start"|"end"}` — activité d'outil,
+      pour la transparence côté client ;
+    - `{"type": "delta", "text": <str>}` — tokens de la réponse finale.
+
+    On ne relaie que les tokens du nœud `agent` (le triage utilise une sortie
+    structurée, à ignorer). Si aucun token n'a été diffusé — chemin `clarify`
+    ou tour purement outillé — on émet le contenu final en une fois.
+    """
+    app = build_graph()
+    config = _configize(thread_id, project)
+    inputs = {"messages": [HumanMessage(content=message)], "context": ""}
+
+    streamed = False
+    async for event in app.astream_events(inputs, config=config, version="v2"):
+        kind = event.get("event")
+        if kind == "on_tool_start":
+            yield {"type": "tool", "name": event.get("name", ""), "phase": "start"}
+        elif kind == "on_tool_end":
+            yield {"type": "tool", "name": event.get("name", ""), "phase": "end"}
+        elif kind == "on_chat_model_stream":
+            if event.get("metadata", {}).get("langgraph_node") != "agent":
+                continue
+            delta = _text(event["data"]["chunk"].content)
+            if delta:
+                streamed = True
+                yield {"type": "delta", "text": delta}
+
+    if not streamed:
+        snapshot = await app.aget_state(config)
+        messages = snapshot.values.get("messages", [])
+        if messages:
+            content = _text(messages[-1].content)
+            if content:
+                yield {"type": "delta", "text": content}
