@@ -1,6 +1,6 @@
 import { type KeyboardEvent, useLayoutEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { ArrowUp, FolderGit2, Loader2 } from "lucide-react";
+import { ArrowUp, FolderGit2, Square } from "lucide-react";
 
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -56,24 +56,31 @@ export const Composer = observer(function Composer() {
             />
           </label>
 
-          <button
-            type="button"
-            onClick={() => void chat.send()}
-            disabled={!chat.canSend}
-            aria-label="Envoyer"
-            className={cn(
-              "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors",
-              chat.canSend
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "bg-muted text-muted-foreground",
-            )}
-          >
-            {chat.loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
+          {chat.loading ? (
+            <button
+              type="button"
+              onClick={() => chat.stop()}
+              aria-label="Arrêter"
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <Square className="size-3.5 fill-current" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void chat.send()}
+              disabled={!chat.canSend}
+              aria-label="Envoyer"
+              className={cn(
+                "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors",
+                chat.canSend
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
               <ArrowUp className="size-4" />
-            )}
-          </button>
+            </button>
+          )}
         </div>
       </div>
       <p className="mt-2 text-center text-[11px] text-muted-foreground/70">

@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 
-import { sendChat } from "@/api/client";
+import { streamChat } from "@/api/client";
 import { loadConversations, saveConversations } from "@/lib/storage";
 
 export type MessageRole = "user" | "assistant" | "error";
@@ -30,6 +30,7 @@ export class ChatStore {
   activeId = "";
   input = "";
   loading = false;
+  private controller: AbortController | null = null;
 
   constructor() {
     const saved = loadConversations();
@@ -99,6 +100,11 @@ export class ChatStore {
     }
   }
 
+  /** Interrompt le streaming en cours (le texte déjà reçu est conservé). */
+  stop(): void {
+    this.controller?.abort();
+  }
+
   async send(): Promise<void> {
     const text = this.input.trim();
     if (!text || this.loading) return;
@@ -108,21 +114,62 @@ export class ChatStore {
     if (conv.messages.length === 1) {
       conv.title = text.length > 40 ? `${text.slice(0, 40)}…` : text;
     }
+    // Bulle assistant vide qu'on remplit au fil du flux (index stable).
+    const idx = conv.messages.push({ role: "assistant", content: "" }) - 1;
     this.input = "";
     this.loading = true;
+    this.controller = new AbortController();
+
+    const setContent = (fn: (prev: string) => string) =>
+      runInAction(() => {
+        conv.messages[idx].content = fn(conv.messages[idx].content);
+      });
 
     try {
-      const { answer } = await sendChat(text, conv.id, conv.project);
-      runInAction(() => {
-        conv.messages.push({ role: "assistant", content: answer });
-      });
+      await streamChat(
+        text,
+        conv.id,
+        conv.project,
+        {
+          onDelta: (t) => setContent((prev) => prev + t),
+          onError: (e) => {
+            runInAction(() => {
+              if (conv.messages[idx].content) {
+                conv.messages[idx].content += `\n\n_(interrompu : ${e.message})_`;
+              } else {
+                conv.messages[idx].role = "error";
+                conv.messages[idx].content = e.message;
+              }
+            });
+          },
+        },
+        this.controller.signal,
+      );
     } catch (error) {
+      const aborted = error instanceof DOMException && error.name === "AbortError";
       runInAction(() => {
-        conv.messages.push({ role: "error", content: String(error) });
+        if (aborted) {
+          if (!conv.messages[idx].content) {
+            conv.messages.splice(idx, 1);
+          }
+        } else if (conv.messages[idx].content) {
+          conv.messages[idx].content += `\n\n_(interrompu : ${String(error)})_`;
+        } else {
+          conv.messages[idx].role = "error";
+          conv.messages[idx].content = String(error);
+        }
       });
     } finally {
       runInAction(() => {
+        // Retire une bulle assistant restée vide (aucun token, pas d'erreur).
+        if (
+          conv.messages[idx]?.role === "assistant" &&
+          !conv.messages[idx].content
+        ) {
+          conv.messages.splice(idx, 1);
+        }
         this.loading = false;
+        this.controller = null;
       });
     }
   }
