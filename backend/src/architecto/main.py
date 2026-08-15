@@ -1,10 +1,32 @@
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from architecto.agent.checkpointer import postgres_checkpointer
+from architecto.agent.graph import build_graph_with, set_graph
 from architecto.api.v1.router import api_router
 from architecto.core.config import settings
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Câble un graphe à persistance durable si `AGENT_CHECKPOINTER=postgres`.
+
+    Sinon on ne fait rien : l'agent utilise le graphe par défaut (checkpointer
+    en mémoire), threads volatils — adapté au dev et aux tests.
+    """
+    if settings.agent.checkpointer == "postgres":
+        async with postgres_checkpointer() as saver:
+            set_graph(build_graph_with(saver))
+            try:
+                yield
+            finally:
+                set_graph(None)
+    else:
+        yield
 
 
 def _configure_langsmith() -> None:
@@ -24,6 +46,7 @@ def create_app() -> FastAPI:
         title=settings.app.name,
         version="0.1.0",
         debug=settings.app.debug,
+        lifespan=lifespan,
     )
 
     app.add_middleware(

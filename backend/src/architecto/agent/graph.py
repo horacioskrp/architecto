@@ -10,19 +10,13 @@ from architecto.agent.state import AgentState
 from architecto.agent.tools import TOOLS
 
 
-@lru_cache
-def build_graph():
-    """Construit le graphe agentique.
+def build_graph_with(checkpointer):
+    """Construit et compile le graphe agentique avec un checkpointer donné.
 
     Flux : triage décide s'il faut clarifier.
     - clarification requise -> `clarify` (pose des questions) -> END
     - sinon -> `agent` <-> `tools` (boucle ReAct) -> END
-
-    Note : checkpointer en mémoire pour le squelette. En production, remplacer par
-    `AsyncPostgresSaver` (langgraph-checkpoint-postgres) pour persister les threads.
     """
-    from langgraph.checkpoint.memory import MemorySaver
-
     graph = StateGraph(AgentState)
     graph.add_node("triage", triage_node)
     graph.add_node("clarify", clarify_node)
@@ -38,7 +32,31 @@ def build_graph():
     graph.add_conditional_edges("agent", tools_condition)
     graph.add_edge("tools", "agent")
 
-    return graph.compile(checkpointer=MemorySaver())
+    return graph.compile(checkpointer=checkpointer)
+
+
+@lru_cache
+def build_graph():
+    """Graphe par défaut, checkpointer **en mémoire** (dev, tests, threads volatils)."""
+    from langgraph.checkpoint.memory import MemorySaver
+
+    return build_graph_with(MemorySaver())
+
+
+# Graphe actif : surchargé au démarrage par un graphe adossé à Postgres
+# (persistance durable des threads) via `set_graph` ; sinon défaut mémoire.
+_active_graph = None
+
+
+def set_graph(graph) -> None:
+    """Fixe le graphe actif (persistance durable). `None` rétablit le défaut mémoire."""
+    global _active_graph
+    _active_graph = graph
+
+
+def get_graph():
+    """Graphe actif : l'override durable s'il est en place, sinon le défaut mémoire."""
+    return _active_graph if _active_graph is not None else build_graph()
 
 
 def _configize(thread_id: str, project: str) -> dict:
@@ -65,7 +83,7 @@ async def run_agent(message: str, thread_id: str = "default", project: str = "")
 
     `project` (optionnel) scope la mémoire long terme (save/recall_decisions).
     """
-    app = build_graph()
+    app = get_graph()
     result = await app.ainvoke(
         {"messages": [HumanMessage(content=message)], "context": ""},
         config=_configize(thread_id, project),
@@ -87,7 +105,7 @@ async def stream_agent(
     structurée, à ignorer). Si aucun token n'a été diffusé — chemin `clarify`
     ou tour purement outillé — on émet le contenu final en une fois.
     """
-    app = build_graph()
+    app = get_graph()
     config = _configize(thread_id, project)
     inputs = {"messages": [HumanMessage(content=message)], "context": ""}
 
