@@ -5,10 +5,12 @@ import { Outlet } from "react-router-dom";
 import { ConversationSidebar } from "@/components/layout/ConversationSidebar";
 import { DecisionsModal } from "@/components/decisions/DecisionsModal";
 import { KnowledgeModal } from "@/components/knowledge/KnowledgeModal";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useStores } from "@/stores/context";
 
 export const RootLayout = observer(function RootLayout() {
   const { ui } = useStores();
+  useKeyboardShortcuts();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

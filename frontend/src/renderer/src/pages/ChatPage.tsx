@@ -2,10 +2,18 @@ import { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Composer } from "@/components/chat/Composer";
+import { MessageActions } from "@/components/chat/MessageActions";
 import { ErrorBoundary, InlineErrorFallback } from "@/components/ErrorBoundary";
 import { Markdown } from "@/components/markdown/Markdown";
 import { cn } from "@/lib/utils";
 import { useStores } from "@/stores/context";
+
+const STARTERS = [
+  "Conçois une architecture microservices pour une marketplace",
+  "Rédige un ADR pour choisir entre PostgreSQL et MongoDB",
+  "Propose un schéma de base de données pour un système de réservation",
+  "Analyse les compromis d'une architecture hexagonale",
+];
 
 export const ChatPage = observer(function ChatPage() {
   const { chat } = useStores();
@@ -37,18 +45,38 @@ export const ChatPage = observer(function ChatPage() {
               de données, revue de dépendances. Associe un projet pour que je
               me souvienne de tes décisions.
             </p>
+            <div className="mt-6 grid w-full max-w-xl grid-cols-1 gap-2 sm:grid-cols-2">
+              {STARTERS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => void chat.sendText(prompt)}
+                  className="rounded-xl border border-border bg-card px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:border-muted-foreground/40 hover:bg-accent hover:text-foreground"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
             {chat.messages.map((m, i) => (
-              <ErrorBoundary
-                key={i}
-                fallback={(error, reset) => (
-                  <InlineErrorFallback error={error} reset={reset} />
+              <div key={i} className="group/msg">
+                <ErrorBoundary
+                  fallback={(error, reset) => (
+                    <InlineErrorFallback error={error} reset={reset} />
+                  )}
+                >
+                  <Message role={m.role} content={m.content} />
+                </ErrorBoundary>
+                {m.role === "assistant" && m.content && (
+                  <MessageActions
+                    content={m.content}
+                    canRegenerate={i === count - 1 && !chat.loading}
+                    onRegenerate={() => void chat.regenerate()}
+                  />
                 )}
-              >
-                <Message role={m.role} content={m.content} />
-              </ErrorBoundary>
+              </div>
             ))}
             {status && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
