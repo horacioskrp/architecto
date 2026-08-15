@@ -3,13 +3,13 @@ from __future__ import annotations
 from functools import lru_cache
 
 from langchain_postgres import PGVector
-from sqlalchemy import create_engine, delete, select
+from sqlalchemy import create_engine, delete, func, select
 from sqlalchemy.orm import Session
 
 from architecto.core.config import settings
 from architecto.core.llm import get_embeddings
 from architecto.features.memory.models import ArchitectureDecision, Project
-from architecto.features.memory.ports import StoredDecision
+from architecto.features.memory.ports import ProjectSummary, StoredDecision
 
 DECISIONS_COLLECTION = "architecto_decisions"
 
@@ -67,6 +67,21 @@ class SqlDecisionStore:
                 )
                 for r in rows
             ]
+
+    def list_projects(self) -> list[ProjectSummary]:
+        """Projets ayant au moins une décision, avec le compte, plus récents d'abord."""
+        with Session(self._engine) as session:
+            rows = session.execute(
+                select(
+                    Project.slug,
+                    Project.name,
+                    func.count(ArchitectureDecision.id),
+                )
+                .join(ArchitectureDecision, ArchitectureDecision.project_id == Project.id)
+                .group_by(Project.id)
+                .order_by(func.max(ArchitectureDecision.created_at).desc())
+            ).all()
+            return [ProjectSummary(slug=s, name=n, decision_count=c) for s, n, c in rows]
 
     def clear(self) -> None:
         with Session(self._engine) as session:

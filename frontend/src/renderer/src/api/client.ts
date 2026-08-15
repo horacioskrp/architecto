@@ -139,3 +139,35 @@ export async function deleteSource(source: string): Promise<void> {
     throw new Error(`Erreur suppression : ${res.status}`);
   }
 }
+
+// --- Mémoire : décisions d'architecture (ADR) -------------------------------
+
+export interface DecisionProject {
+  slug: string;
+  name: string;
+  decision_count: number;
+}
+
+export interface Decision {
+  id: string;
+  title: string;
+  status: string;
+  context: string;
+  decision: string;
+  consequences: string;
+}
+
+export async function listDecisionProjects(): Promise<DecisionProject[]> {
+  const res = await fetch(`${BASE}/memory/projects`);
+  if (!res.ok) throw new Error(`Erreur API : ${res.status}`);
+  const data = (await res.json()) as { projects: DecisionProject[] };
+  return data.projects;
+}
+
+export async function listDecisions(project: string): Promise<Decision[]> {
+  const url = `${BASE}/memory/decisions?project=${encodeURIComponent(project)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Erreur API : ${res.status}`);
+  const data = (await res.json()) as { decisions: Decision[] };
+  return data.decisions;
+}
