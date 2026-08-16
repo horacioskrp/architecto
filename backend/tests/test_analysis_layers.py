@@ -2,7 +2,6 @@ from pathlib import Path
 
 from architecto.features.analysis import parser as parser_mod
 from architecto.features.analysis.layers import (
-    DEFAULT_LAYER_RULES,
     find_layer_violations,
     layer_of,
 )
