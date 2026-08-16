@@ -49,3 +49,13 @@ pnpm dev               # lance l'app Electron (pointe sur http://localhost:8000)
 API : http://localhost:8000/docs
 
 📖 Détails : [`docs/`](docs/README.md) — [Démarrage](docs/fr/getting-started.md) · [Getting started](docs/en/getting-started.md)
+
+## Contribuer & communauté
+
+- [Guide de contribution](CONTRIBUTING.md) — conventions Gitflow, PR.
+- [Code de conduite](CODE_OF_CONDUCT.md) — Contributor Covenant.
+- [Politique de sécurité](SECURITY.md) — signaler une vulnérabilité (canal privé).
+
+## Licence
+
+Distribué sous licence **MIT** — voir [`LICENSE`](LICENSE).
