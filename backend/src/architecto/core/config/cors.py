@@ -17,7 +17,8 @@ class CORSSettings(SectionSettings):
 
     model_config = SettingsConfigDict(env_prefix="CORS_")
 
-    origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
+    # Champ pydantic : le défaut mutable est copié en toute sécurité par pydantic.
+    origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]  # noqa: RUF012
     allow_credentials: bool = True
 
     @field_validator("origins", mode="before")

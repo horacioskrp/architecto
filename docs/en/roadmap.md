@@ -29,7 +29,7 @@ Legend: ⬜ todo · 🟦 in progress · ✅ done
 
 | Phase | Feature | Branch | Status |
 |-------|---------|--------|--------|
-| 0 | CI + PR template | `feature/ci` | ⬜ |
+| 0 | CI + PR template | `feature/ci` | ✅ |
 | 1 | Clarification loop | `feature/clarify-loop` | ✅ |
 | 1 | RAG ingestion ([design](design/rag-ingestion.md)) | `feature/rag-ingestion` | ✅ |
 | 1 | Cited answers | `feature/rag-citations` | ✅ |
@@ -145,8 +145,9 @@ scaling:
 - **Perf**: lazy-load mermaid and the syntax highlighter (out of the initial bundle).
 - **A11y**: `aria-live` on streaming, focus trap in modals.
 
-> **Phase 0 (CI)** is still pending — all the more relevant now that both backend
-> **and** frontend have tests to run on every PR.
+> **Phase 0 (CI)** is in place: a GitHub Actions workflow validates every PR to
+> `develop`/`main` — backend (`ruff` + `pytest`), frontend (`tsc` + `vitest` +
+> build), SDK (`pytest`) — with a PR template.
 
 ## Advisory — with explicit caveats (never authoritative output)
 

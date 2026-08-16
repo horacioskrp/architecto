@@ -32,7 +32,7 @@ class _FakeStore:
     def __init__(self, docs):
         self._docs = docs
 
-    def similarity_search(self, query, k=4):  # noqa: ARG002
+    def similarity_search(self, query, k=4):
         return self._docs[:k]
 
 

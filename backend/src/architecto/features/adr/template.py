@@ -21,7 +21,8 @@ def render_adr(
     adr_date: str | None = None,
 ) -> str:
     """Rend un ADR Markdown structuré (fonction pure, structure garantie)."""
-    day = adr_date or date_cls.today().isoformat()
+    # date locale volontaire : un ADR est daté du jour, sans notion de fuseau.
+    day = adr_date or date_cls.today().isoformat()  # noqa: DTZ011
     alts = alternatives.strip() or "—"
     return (
         f"# ADR : {title.strip()}\n\n"

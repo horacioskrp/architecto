@@ -22,7 +22,7 @@ class _FakeGraph:
         self._events = events
         self._final = final or []
 
-    async def astream_events(self, _inputs, *, config, version):  # noqa: ARG002
+    async def astream_events(self, _inputs, *, config, version):
         for event in self._events:
             yield event
 

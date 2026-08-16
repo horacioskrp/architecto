@@ -20,9 +20,8 @@ def test_resolve_local(tmp_path: Path):
 
 
 def test_resolve_local_introuvable():
-    with pytest.raises(FileNotFoundError):
-        with resolve_source("/chemin/qui/nexiste/pas/xyz"):
-            pass
+    with pytest.raises(FileNotFoundError), resolve_source("/chemin/qui/nexiste/pas/xyz"):
+        pass
 
 
 def test_resolve_github_clone_et_nettoyage(monkeypatch):
@@ -30,7 +29,6 @@ def test_resolve_github_clone_et_nettoyage(monkeypatch):
 
     def fake_run(cmd, **_kwargs):
         recorded["cmd"] = cmd
-        return None
 
     monkeypatch.setattr(source_mod.subprocess, "run", fake_run)
 
