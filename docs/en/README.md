@@ -36,4 +36,7 @@ breakdowns and code review — backed by a vector knowledge base (RAG).
 
 ## Status
 
-Project under initial setup. This documentation evolves alongside the code.
+Backend trio (Phases 1-3) shipped; Electron desktop client with streaming,
+multi-conversations, client-side RAG ingestion and a decisions panel; frontend
+robustness (tests, OpenAPI types, ErrorBoundary). See the [roadmap](roadmap.md).
+**CI** notably remains. This documentation evolves alongside the code.
