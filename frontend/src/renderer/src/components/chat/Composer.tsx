@@ -8,6 +8,10 @@ import { useStores } from "@/stores/context";
 
 const MAX_HEIGHT = 200;
 
+// Style « touche de clavier » (key cap).
+const KBD =
+  "inline-flex min-w-[1.4rem] items-center justify-center rounded border border-border bg-muted px-1 py-0.5 font-sans text-[10px] leading-none text-foreground shadow-sm";
+
 export const Composer = observer(function Composer() {
   const { chat } = useStores();
   const areaRef = useRef<HTMLTextAreaElement>(null);
@@ -83,8 +87,14 @@ export const Composer = observer(function Composer() {
           )}
         </div>
       </div>
-      <p className="mt-2 text-center text-[11px] text-muted-foreground/70">
-        Entrée pour envoyer · Maj+Entrée pour un saut de ligne
+      <p className="mt-2 flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-muted-foreground/70">
+        <kbd className={KBD}>⏎</kbd>
+        <span>envoyer</span>
+        <span className="opacity-40">·</span>
+        <kbd className={KBD}>⇧</kbd>
+        <span className="opacity-60">+</span>
+        <kbd className={KBD}>⏎</kbd>
+        <span>saut de ligne</span>
       </p>
     </div>
   );
