@@ -36,7 +36,7 @@ def test_validate_sql_invalide():
 
 
 def test_validate_sql_vide():
-    ok, error = validate_sql("   ")
+    ok, _error = validate_sql("   ")
     assert ok is False
 
 

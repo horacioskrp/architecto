@@ -29,7 +29,7 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ fait
 
 | Phase | Feature | Branche | Statut |
 |-------|---------|---------|--------|
-| 0 | CI + template PR | `feature/ci` | ⬜ |
+| 0 | CI + template PR | `feature/ci` | ✅ |
 | 1 | Boucle de clarification | `feature/clarify-loop` | ✅ |
 | 1 | Ingestion RAG ([design](design/rag-ingestion.md)) | `feature/rag-ingestion` | ✅ |
 | 1 | Réponses citées | `feature/rag-citations` | ✅ |
@@ -149,8 +149,9 @@ et la mise à l'échelle :
 - **Perf** : lazy-load de mermaid et du syntax-highlighter (sortis du bundle initial).
 - **A11y** : `aria-live` sur le streaming, piège de focus dans les modals.
 
-> La **Phase 0 (CI)** reste à faire — d'autant plus pertinente maintenant que
-> backend **et** frontend ont des tests à faire tourner sur chaque PR.
+> La **Phase 0 (CI)** est en place : un workflow GitHub Actions valide chaque PR
+> vers `develop`/`main` — backend (`ruff` + `pytest`), frontend (`tsc` + `vitest`
+> + build), SDK (`pytest`) — avec un template de PR.
 
 ## Advisory — avec réserves explicites (jamais en sortie autoritaire)
 
