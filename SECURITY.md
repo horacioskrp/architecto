@@ -26,7 +26,7 @@ Utilise de préférence le canal **privé** de GitHub :
 1. Onglet **Security** du dépôt → **Report a vulnerability** (GitHub Private
    Vulnerability Reporting).
 
-À défaut, écris à **horaciodigijob@gmail.com** avec l'objet `[SECURITY]`.
+À défaut, écris à **hervekudayah@gmail.com** avec l'objet `[SECURITY]`.
 
 Merci d'inclure, si possible :
 
@@ -66,7 +66,7 @@ Prefer GitHub's **private** channel:
 1. Repository **Security** tab → **Report a vulnerability** (GitHub Private
    Vulnerability Reporting).
 
-Otherwise, email **horaciodigijob@gmail.com** with subject `[SECURITY]`.
+Otherwise, email **hervekudayah@gmail.com** with subject `[SECURITY]`.
 
 Please include, if possible:
 
