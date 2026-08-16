@@ -54,6 +54,18 @@ L'app **Electron** (client léger) pointe sur le backend en URL absolue
 
 Packaging d'un installeur : `pnpm build:win` (ou `build:mac` / `build:linux`).
 
+Autres scripts frontend :
+
+```bash
+pnpm test        # tests Vitest
+pnpm typecheck   # tsc --noEmit
+pnpm gen:api     # régénère les types API depuis backend/openapi.json
+```
+
+Le contrat API est typé depuis l'OpenAPI. Après une modification des schémas
+backend, régénérer : `uv run python scripts/dump_openapi.py` (backend) puis
+`pnpm gen:api` (frontend).
+
 ## Providers optionnels
 
 La base installe Anthropic (chat) et OpenAI (embeddings). Pour Gemini ou DeepSeek :

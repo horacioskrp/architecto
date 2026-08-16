@@ -40,6 +40,18 @@ Legend: ⬜ todo · 🟦 in progress · ✅ done
 | 2 | Database designer | `feature/database-designer` | ✅ |
 | 3 | GitHub repository analyzer ([design](design/github-analyzer.md)) | `feature/github-analyzer` | ✅ |
 | 3 | Security checklist (OWASP) | `feature/security-checklist` | ✅ |
+| Client | Electron app (thin client, markdown/mermaid) | `feature/electron-*` | ✅ |
+| Client | Multi-conversations + persistent history + project | `feature/electron-phase-b` | ✅ |
+| Client | Streaming responses (SSE) | `feature/electron-phase-c-streaming` | ✅ |
+| Scale | Client-side RAG ingestion (upload) | `feature/knowledge-ingestion-ui` | ✅ |
+| Scale | Tool transparency (live activity) | `feature/tool-transparency` | ✅ |
+| Scale | Durable thread persistence (AsyncPostgresSaver) | `feature/durable-checkpointer` | ✅ |
+| Scale | Per-project Decisions/ADR panel | `feature/decisions-panel` | ✅ |
+| Front | Robustness: ErrorBoundary | `feature/frontend-error-boundary` | ✅ |
+| Front | API types generated from OpenAPI | `feature/frontend-openapi-types` | ✅ |
+| Front | Vitest tests (stores, ErrorBoundary, storage) | `feature/frontend-vitest` | ✅ |
+| Front | UX quick wins (starters, actions, shortcuts) | `feature/frontend-ux-quickwins` | ✅ |
+| Front | Perf (lazy-load) + a11y (aria-live, focus-trap) | `feature/frontend-tier3` | ✅ |
 
 ---
 
@@ -103,6 +115,38 @@ Legend: ⬜ todo · 🟦 in progress · ✅ done
   rules), not an LLM read of the repo.
 - **`feature/security-checklist`** — **OWASP**-grounded checklist (a checklist, not a
   verdict).
+
+## Client & scaling (post-Phase 3)
+
+Once the backend trio was credible, effort shifted to the **desktop client** and
+scaling:
+
+- **Electron app** (thin client): markdown + mermaid diagram rendering,
+  multi-conversations with **persistent history** (localStorage), project
+  selection, light/dark/system theme, and **token-by-token streaming** (SSE,
+  `POST /chat/stream`).
+- **Client-side RAG ingestion**: users upload their own documents
+  (`.md`/`.txt`/`.pdf`) to ground the agent on their context — endpoints
+  `POST /knowledge/ingest`, `GET`/`DELETE /knowledge/sources`.
+- **Tool transparency**: the SSE stream relays tool activity
+  ("generating a diagram…") shown live.
+- **Durable thread persistence**: optional `AsyncPostgresSaver`
+  (`AGENT_CHECKPOINTER=postgres`), in-memory checkpointer otherwise.
+- **Decisions/ADR panel**: browse long-term memory per project (endpoints
+  `GET /memory/projects`, `GET /memory/decisions`).
+
+### Frontend robustness
+
+- **ErrorBoundary** (global + per message): a failing render no longer blanks the app.
+- **API types generated from OpenAPI** (`openapi-typescript`): single source of
+  truth, no more front/back drift — pipeline `scripts/dump_openapi.py` (back)
+  then `pnpm gen:api` (front).
+- **Vitest tests**: first tests for the stores, ErrorBoundary and persistence.
+- **Perf**: lazy-load mermaid and the syntax highlighter (out of the initial bundle).
+- **A11y**: `aria-live` on streaming, focus trap in modals.
+
+> **Phase 0 (CI)** is still pending — all the more relevant now that both backend
+> **and** frontend have tests to run on every PR.
 
 ## Advisory — with explicit caveats (never authoritative output)
 

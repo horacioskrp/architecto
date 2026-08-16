@@ -27,6 +27,12 @@ own prefix. Reference file: [`backend/.env.example`](../../backend/.env.example)
 | `APP_HOST` | `0.0.0.0` | Bind host |
 | `APP_PORT` | `8000` | Bind port |
 
+### `AGENT_` — agent behavior
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AGENT_CHECKPOINTER` | `memory` | LangGraph thread persistence: `memory` (volatile, dev/tests) \| `postgres` (durable via `AsyncPostgresSaver`, recommended in prod) |
+
 ### `DB_` — database
 
 The Postgres URL is **composed** from its parts (nothing hardcoded).
@@ -64,10 +70,19 @@ Decoupled from chat: Anthropic provides no embeddings.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `EMBEDDING_PROVIDER` | `openai` | `openai` \| `google` |
+| `EMBEDDING_PROVIDER` | `openai` | `openai` \| `google` \| `local` (fastembed, **no key**) |
 | `EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
-| `EMBEDDING_API_KEY` | — | Key (`SecretStr`) |
+| `EMBEDDING_API_KEY` | — | Key (`SecretStr`) — unused for `local` |
 | `EMBEDDING_BASE_URL` | — | Custom URL |
+
+### `KNOWLEDGE_` — knowledge base ingestion
+
+Guard rails applied to client-side uploads (endpoint `/knowledge/ingest`).
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `KNOWLEDGE_MAX_UPLOAD_MB` | `20` | Max size per file (MB) |
+| `KNOWLEDGE_MAX_FILES` | `20` | Max files per request |
 
 ### `LANGSMITH_` — observability
 

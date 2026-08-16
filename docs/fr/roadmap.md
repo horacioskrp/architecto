@@ -40,6 +40,18 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ fait
 | 2 | Concepteur de base de données | `feature/database-designer` | ✅ |
 | 3 | Analyseur de dépôt GitHub ([design](design/github-analyzer.md)) | `feature/github-analyzer` | ✅ |
 | 3 | Checklist sécurité (OWASP) | `feature/security-checklist` | ✅ |
+| Client | App Electron (client léger, markdown/mermaid) | `feature/electron-*` | ✅ |
+| Client | Multi-conversations + historique persistant + projet | `feature/electron-phase-b` | ✅ |
+| Client | Streaming des réponses (SSE) | `feature/electron-phase-c-streaming` | ✅ |
+| Scale | Ingestion RAG depuis le client (upload) | `feature/knowledge-ingestion-ui` | ✅ |
+| Scale | Transparence des outils (activité en direct) | `feature/tool-transparency` | ✅ |
+| Scale | Persistance durable des threads (AsyncPostgresSaver) | `feature/durable-checkpointer` | ✅ |
+| Scale | Panneau Décisions/ADR par projet | `feature/decisions-panel` | ✅ |
+| Front | Robustesse : ErrorBoundary | `feature/frontend-error-boundary` | ✅ |
+| Front | Types API générés depuis l'OpenAPI | `feature/frontend-openapi-types` | ✅ |
+| Front | Tests Vitest (stores, ErrorBoundary, storage) | `feature/frontend-vitest` | ✅ |
+| Front | Quick wins UX (suggestions, actions, raccourcis) | `feature/frontend-ux-quickwins` | ✅ |
+| Front | Perf (lazy-load) + a11y (aria-live, focus-trap) | `feature/frontend-tier3` | ✅ |
 
 ---
 
@@ -107,6 +119,38 @@ Légende : ⬜ à faire · 🟦 en cours · ✅ fait
   règles de couches), pas une lecture LLM du repo.
 - **`feature/security-checklist`** — checklist ancrée **OWASP** (une checklist, pas un
   verdict).
+
+## Client & mise à l'échelle (post-Phase 3)
+
+Une fois le trio backend crédible, l'effort s'est porté sur le **client desktop**
+et la mise à l'échelle :
+
+- **App Electron** (client léger) : rendu markdown + diagrammes mermaid,
+  multi-conversations avec **historique persistant** (localStorage), sélection de
+  projet, thème clair/sombre/système, et **streaming des réponses** token par
+  token (SSE, endpoint `POST /chat/stream`).
+- **Ingestion RAG depuis le client** : l'utilisateur téléverse ses propres
+  documents (`.md`/`.txt`/`.pdf`) pour ancrer l'agent sur son contexte —
+  endpoints `POST /knowledge/ingest`, `GET`/`DELETE /knowledge/sources`.
+- **Transparence des outils** : le flux SSE relaie l'activité d'outil
+  (« génère un diagramme… ») affichée en direct.
+- **Persistance durable des threads** : `AsyncPostgresSaver` optionnel
+  (`AGENT_CHECKPOINTER=postgres`), sinon checkpointer en mémoire.
+- **Panneau Décisions/ADR** : consultation de la mémoire long terme par projet
+  (endpoints `GET /memory/projects`, `GET /memory/decisions`).
+
+### Robustesse frontend
+
+- **ErrorBoundary** (global + par message) : un rendu défaillant n'efface plus l'app.
+- **Types API générés depuis l'OpenAPI** (`openapi-typescript`) : source de vérité
+  unique, fin de la dérive front/back — pipeline `scripts/dump_openapi.py` (back)
+  puis `pnpm gen:api` (front).
+- **Tests Vitest** : premiers tests des stores, de l'ErrorBoundary et de la persistance.
+- **Perf** : lazy-load de mermaid et du syntax-highlighter (sortis du bundle initial).
+- **A11y** : `aria-live` sur le streaming, piège de focus dans les modals.
+
+> La **Phase 0 (CI)** reste à faire — d'autant plus pertinente maintenant que
+> backend **et** frontend ont des tests à faire tourner sur chaque PR.
 
 ## Advisory — avec réserves explicites (jamais en sortie autoritaire)
 

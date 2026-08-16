@@ -54,6 +54,18 @@ The **Electron** app (thin client) targets the backend at an absolute URL
 
 Package an installer: `pnpm build:win` (or `build:mac` / `build:linux`).
 
+Other frontend scripts:
+
+```bash
+pnpm test        # Vitest tests
+pnpm typecheck   # tsc --noEmit
+pnpm gen:api     # regenerate API types from backend/openapi.json
+```
+
+The API contract is typed from OpenAPI. After changing backend schemas,
+regenerate: `uv run python scripts/dump_openapi.py` (backend) then `pnpm gen:api`
+(frontend).
+
 ## Optional providers
 
 The base install ships Anthropic (chat) and OpenAI (embeddings). For Gemini or
