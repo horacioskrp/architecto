@@ -3,6 +3,8 @@ import { join } from "node:path";
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { app, BrowserWindow, session, shell } from "electron";
 
+import icon from "../../build/icon.png?asset";
+
 // Backend appelé par le renderer (client léger). Surchargeable via l'env.
 const API_ORIGIN = process.env["ARCHITECTO_API_ORIGIN"] ?? "http://localhost:8000";
 
@@ -33,6 +35,7 @@ function createWindow(): void {
     height: 750,
     show: false,
     autoHideMenuBar: true,
+    icon,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: true,
