@@ -27,6 +27,12 @@ préfixe. Fichier de référence : [`backend/.env.example`](../../backend/.env.e
 | `APP_HOST` | `0.0.0.0` | Hôte d'écoute |
 | `APP_PORT` | `8000` | Port d'écoute |
 
+### `AGENT_` — comportement de l'agent
+
+| Variable | Défaut | Description |
+|----------|--------|-------------|
+| `AGENT_CHECKPOINTER` | `memory` | Persistance des threads LangGraph : `memory` (volatil, dev/tests) \| `postgres` (durable via `AsyncPostgresSaver`, recommandé en prod) |
+
 ### `DB_` — base de données
 
 L'URL Postgres est **composée** à partir des composants (rien en dur).
@@ -64,10 +70,19 @@ Découplé du chat : Anthropic ne fournit pas d'embeddings.
 
 | Variable | Défaut | Description |
 |----------|--------|-------------|
-| `EMBEDDING_PROVIDER` | `openai` | `openai` \| `google` |
+| `EMBEDDING_PROVIDER` | `openai` | `openai` \| `google` \| `local` (fastembed, **sans clé**) |
 | `EMBEDDING_MODEL` | `text-embedding-3-small` | Modèle d'embeddings |
-| `EMBEDDING_API_KEY` | — | Clé (`SecretStr`) |
+| `EMBEDDING_API_KEY` | — | Clé (`SecretStr`) — inutile pour `local` |
 | `EMBEDDING_BASE_URL` | — | URL custom |
+
+### `KNOWLEDGE_` — ingestion de la base de connaissances
+
+Garde-fous appliqués aux téléversements côté client (endpoint `/knowledge/ingest`).
+
+| Variable | Défaut | Description |
+|----------|--------|-------------|
+| `KNOWLEDGE_MAX_UPLOAD_MB` | `20` | Taille max par fichier (Mo) |
+| `KNOWLEDGE_MAX_FILES` | `20` | Nombre max de fichiers par requête |
 
 ### `LANGSMITH_` — observabilité
 

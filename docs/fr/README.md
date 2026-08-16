@@ -37,4 +37,8 @@ vectorielle (RAG).
 
 ## Statut
 
-Projet en cours d'initialisation. Cette documentation évolue avec le code.
+Trio backend (Phases 1-3) livré ; client desktop Electron avec streaming,
+multi-conversations, ingestion RAG depuis le client et panneau de décisions ;
+robustesse frontend (tests, types OpenAPI, ErrorBoundary). Voir la
+[feuille de route](roadmap.md). Reste notamment la **CI**. Cette documentation
+évolue avec le code.
