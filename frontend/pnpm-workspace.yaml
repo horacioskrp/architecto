@@ -2,3 +2,13 @@
 allowBuilds:
   electron: true
   esbuild: true
+  # non requis : le packaging Windows utilise la cible nsis, pas Squirrel/winstaller
+  electron-winstaller: false
+
+minimumReleaseAgeExclude:
+  - react-router-dom@6.30.5
+  - react-router@6.30.5
+
+# Corrige des vulnérabilités transitives sans attendre les mainteneurs.
+overrides:
+  nanoid: ^3.3.18 # GHSA : boucle infinie possible dans <3.3.18 (via postcss)
