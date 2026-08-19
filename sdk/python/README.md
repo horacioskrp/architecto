@@ -110,3 +110,13 @@ Les méthodes async (`AsyncArchitectoClient`) sont identiques ; `stream_chat` y 
 
 Modèles (Pydantic v2) : `ChatRequest`, `ChatResponse`, `ChatStreamEvent`,
 `HealthStatus`, `SourceOut`, `IngestResult`, `ProjectOut`, `DecisionOut`.
+
+## Garde-fou de contrat
+
+Les modèles sont écrits à la main, mais un test les rattache au schéma
+**OpenAPI** du backend : [`test_openapi_conformance.py`](tests/test_openapi_conformance.py)
+compare chaque modèle aux composants de [`backend/openapi.json`](../../backend/openapi.json)
+(mêmes champs, même caractère requis). Ce fichier de contrat est lui-même
+maintenu à jour par un test côté backend (`test_openapi_contract.py`, comparé à
+`app.openapi()`). Toute dérive backend non répercutée dans le SDK **casse le CI**
+— l'équivalent Python du `tsc` cassé côté frontend.
