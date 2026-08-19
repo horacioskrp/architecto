@@ -5,18 +5,32 @@ from architecto_sdk.errors import (
     ArchitectoConnectionError,
     ArchitectoError,
 )
-from architecto_sdk.models import ChatRequest, ChatResponse, HealthStatus
+from architecto_sdk.models import (
+    ChatRequest,
+    ChatResponse,
+    ChatStreamEvent,
+    DecisionOut,
+    HealthStatus,
+    IngestResult,
+    ProjectOut,
+    SourceOut,
+)
 
 __version__ = "0.1.0"
 
 __all__ = [
-    "ArchitectoClient",
-    "AsyncArchitectoClient",
-    "ArchitectoError",
-    "ArchitectoConnectionError",
     "ArchitectoAPIError",
+    "ArchitectoClient",
+    "ArchitectoConnectionError",
+    "ArchitectoError",
+    "AsyncArchitectoClient",
     "ChatRequest",
     "ChatResponse",
+    "ChatStreamEvent",
+    "DecisionOut",
     "HealthStatus",
+    "IngestResult",
+    "ProjectOut",
+    "SourceOut",
     "__version__",
 ]
