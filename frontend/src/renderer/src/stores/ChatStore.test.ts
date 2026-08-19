@@ -147,6 +147,30 @@ describe("ChatStore — send (flux mocké)", () => {
     expect(s.active.title).toBe("Prompt exemple");
   });
 
+  it("persiste en localStorage de façon debouncée (pas à chaque token)", async () => {
+    vi.useFakeTimers();
+    try {
+      const setItem = vi.spyOn(Storage.prototype, "setItem");
+      mockStream.mockImplementation(async (_m, _i, _p, h) => {
+        for (const t of ["a", "b", "c", "d", "e"]) h?.onDelta(t);
+      });
+
+      const s = new ChatStore();
+      s.setInput("Question");
+      await s.send();
+
+      // Pendant/juste après le flux : rien n'est encore écrit (debounce en cours).
+      expect(setItem).not.toHaveBeenCalled();
+
+      // Après la fenêtre de debounce : une seule écriture, avec l'état final.
+      await vi.advanceTimersByTimeAsync(600);
+      expect(setItem).toHaveBeenCalledTimes(1);
+      expect(s.messages.at(-1)?.content).toBe("abcde");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("regenerate remplace la dernière réponse pour le même message user", async () => {
     mockStream.mockImplementation(async (_m, _i, _p, h) => h?.onDelta("v1"));
     const s = new ChatStore();
