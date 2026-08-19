@@ -87,7 +87,9 @@ En plus de `POST /chat` (réponse complète), `POST /chat/stream` diffuse la
 réponse **token par token** en Server-Sent Events. `stream_agent` transforme le
 flux `astream_events` de LangGraph en évènements structurés :
 `{type:"tool"}` (activité d'outil, pour la transparence), `{type:"delta"}`
-(tokens), puis `{type:"done"}` / `{type:"error"}`.
+(tokens), puis `{type:"done"}` / `{type:"error"}`. En cas d'échec, le détail
+(traces, message du provider, chemins) est **tracé côté serveur** ; le client
+ne reçoit qu'un message générique, sans fuite d'information.
 
 ### Persistance des threads (checkpointer)
 
@@ -167,7 +169,9 @@ L'app est un **client léger** : le backend tourne séparément (local ou conten
 `ChatStore` (multi-conversations, streaming, activité d'outil), `ThemeStore`,
 `UiStore` (sidebar, modals), `KnowledgeStore` (base de connaissances),
 `DecisionsStore` (ADR par projet). Les conversations et préférences sont
-persistées dans `localStorage`.
+persistées dans `localStorage` (écriture **debouncée** : pendant le streaming,
+le contenu mute à chaque token, on ne réécrit donc qu'après une fenêtre
+d'inactivité plutôt qu'à chaque token).
 
 **Contrat API typé** — le client (`api/client.ts`) dérive ses types du schéma
 **OpenAPI** du backend (`api/schema.d.ts`, généré par `pnpm gen:api` à partir de
