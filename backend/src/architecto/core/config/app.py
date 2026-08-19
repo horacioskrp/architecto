@@ -14,7 +14,7 @@ class AppSettings(SectionSettings):
     env: Literal["dev", "staging", "prod"] = "dev"
     debug: bool = False
     api_v1_prefix: str = "/api/v1"
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"  # loopback par défaut ; le conteneur force 0.0.0.0
     port: int = 8000
 
     @property

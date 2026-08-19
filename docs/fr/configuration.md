@@ -24,7 +24,7 @@ préfixe. Fichier de référence : [`backend/.env.example`](../../backend/.env.e
 | `APP_ENV` | `dev` | `dev` \| `staging` \| `prod` |
 | `APP_DEBUG` | `false` | Mode debug FastAPI |
 | `APP_API_V1_PREFIX` | `/api/v1` | Préfixe des routes |
-| `APP_HOST` | `0.0.0.0` | Hôte d'écoute |
+| `APP_HOST` | `127.0.0.1` | Hôte d'écoute (loopback par défaut — l'API n'est pas authentifiée ; le conteneur force `0.0.0.0`) |
 | `APP_PORT` | `8000` | Port d'écoute |
 
 ### `AGENT_` — comportement de l'agent
