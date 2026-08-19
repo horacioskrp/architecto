@@ -7,7 +7,8 @@ services:
       POSTGRES_PASSWORD: architecto
       POSTGRES_DB: architecto
     ports:
-      - "5433:5432"
+      # publié uniquement sur la loopback de l'hôte (pas exposé au réseau local)
+      - "127.0.0.1:5433:5432"
     volumes:
       - architecto_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -34,7 +35,9 @@ services:
       sh -c "python scripts/init_db.py &&
              uvicorn architecto.main:app --host 0.0.0.0 --port 8000"
     ports:
-      - "8000:8000"
+      # l'API n'est pas authentifiée : publiée seulement sur la loopback de l'hôte,
+      # jamais exposée au réseau local (le conteneur écoute 0.0.0.0 en interne)
+      - "127.0.0.1:8000:8000"
 
 # L'app desktop (Electron) se lance en local (npm run dev) et pointe sur le backend.
 # docker-compose n'orchestre donc que la base et l'API.

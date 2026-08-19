@@ -24,7 +24,7 @@ own prefix. Reference file: [`backend/.env.example`](../../backend/.env.example)
 | `APP_ENV` | `dev` | `dev` \| `staging` \| `prod` |
 | `APP_DEBUG` | `false` | FastAPI debug mode |
 | `APP_API_V1_PREFIX` | `/api/v1` | Route prefix |
-| `APP_HOST` | `0.0.0.0` | Bind host |
+| `APP_HOST` | `127.0.0.1` | Bind host (loopback by default — the API is unauthenticated; the container forces `0.0.0.0`) |
 | `APP_PORT` | `8000` | Bind port |
 
 ### `AGENT_` — agent behavior
