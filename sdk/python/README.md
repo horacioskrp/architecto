@@ -1,7 +1,8 @@
 # architecto-sdk (Python)
 
 SDK client Python pour l'agent [Architecto](../../README.md). Encapsule l'API REST
-(`/api/v1/chat`, `/api/v1/health`) avec des modèles typés et des clients sync + async.
+(chat + streaming, base de connaissances, mémoire long terme, santé) avec des
+modèles typés et des clients sync + async.
 
 ## Installation
 
@@ -18,8 +19,35 @@ from architecto_sdk import ArchitectoClient
 
 with ArchitectoClient("http://localhost:8000") as client:
     print(client.health().version)                 # "0.1.0"
-    reply = client.chat("Propose une architecture pour une API de réservation")
+    reply = client.chat(
+        "Propose une architecture pour une API de réservation",
+        project="reservations",  # scope la mémoire long terme au projet
+    )
     print(reply.answer)
+```
+
+### Streaming (token par token)
+
+```python
+with ArchitectoClient() as client:
+    for event in client.stream_chat("Compare monolithe modulaire vs microservices"):
+        if event.type == "delta":
+            print(event.text, end="", flush=True)
+        elif event.type == "tool":
+            print(f"\n[outil {event.name} : {event.phase}]")
+```
+
+### Base de connaissances & mémoire
+
+```python
+with ArchitectoClient() as client:
+    client.ingest(["docs/patterns.md", "docs/adr-0001.md"])  # RAG
+    for src in client.list_sources():
+        print(src.source, src.chunk_count)
+
+    for project in client.list_projects():
+        for adr in client.list_decisions(project.slug):
+            print(adr.title, "→", adr.decision)
 ```
 
 ## Usage — asynchrone
@@ -47,6 +75,7 @@ asyncio.run(main())
 | `timeout` | `60.0` | Timeout HTTP (s) |
 | `max_retries` | `2` | Retries transport (erreurs réseau) |
 | `headers` | `None` | En-têtes additionnels (ex. auth) |
+| `transport` | `None` | Transport httpx custom (tests via `httpx.MockTransport`) |
 
 ## Gestion d'erreurs
 
@@ -68,7 +97,16 @@ Toutes les exceptions dérivent de `ArchitectoError`.
 
 | Méthode | Retour | Endpoint |
 |---------|--------|----------|
-| `chat(message, thread_id="default")` | `ChatResponse` | `POST /api/v1/chat` |
+| `chat(message, thread_id="default", project="")` | `ChatResponse` | `POST /api/v1/chat` |
+| `stream_chat(message, thread_id="default", project="")` | `Iterator[ChatStreamEvent]` | `POST /api/v1/chat/stream` |
+| `ingest(files)` | `IngestResult` | `POST /api/v1/knowledge/ingest` |
+| `list_sources()` | `list[SourceOut]` | `GET /api/v1/knowledge/sources` |
+| `delete_source(source)` | `None` | `DELETE /api/v1/knowledge/sources` |
+| `list_projects()` | `list[ProjectOut]` | `GET /api/v1/memory/projects` |
+| `list_decisions(project)` | `list[DecisionOut]` | `GET /api/v1/memory/decisions` |
 | `health()` | `HealthStatus` | `GET /api/v1/health` |
 
-Modèles : `ChatRequest`, `ChatResponse`, `HealthStatus` (Pydantic v2).
+Les méthodes async (`AsyncArchitectoClient`) sont identiques ; `stream_chat` y renvoie un `AsyncIterator[ChatStreamEvent]`.
+
+Modèles (Pydantic v2) : `ChatRequest`, `ChatResponse`, `ChatStreamEvent`,
+`HealthStatus`, `SourceOut`, `IngestResult`, `ProjectOut`, `DecisionOut`.
