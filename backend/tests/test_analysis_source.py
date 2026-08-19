@@ -9,9 +9,17 @@ from architecto.features.analysis.source import is_github_url, resolve_source
 def test_is_github_url():
     assert is_github_url("https://github.com/owner/repo")
     assert is_github_url("git@github.com:owner/repo.git")
-    assert is_github_url("https://example.com/repo.git")  # .git -> traité comme clone
+    assert is_github_url("https://example.com/repo.git")  # https distant -> clone
     assert not is_github_url("/chemin/local")
     assert not is_github_url("C:/Users/x/projet")
+
+
+def test_is_github_url_rejette_transports_dangereux():
+    # Vecteur d'exécution de commande via git clone : doit être refusé.
+    assert not is_github_url("ext::sh -c 'touch /tmp/x' #.git")
+    assert not is_github_url("ext::sh#.git")
+    assert not is_github_url("file:///etc/passwd")
+    assert not is_github_url("http://github.com/owner/repo")  # http non-TLS refusé
 
 
 def test_resolve_local(tmp_path: Path):
