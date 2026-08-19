@@ -11,6 +11,7 @@ from architecto.core.config.embeddings import EmbeddingSettings
 from architecto.core.config.knowledge import KnowledgeSettings
 from architecto.core.config.llm import ChatModelSettings
 from architecto.core.config.observability import LangSmithSettings
+from architecto.core.config.ratelimit import RateLimitSettings
 
 
 class Settings(BaseSettings):
@@ -28,6 +29,7 @@ class Settings(BaseSettings):
     knowledge: KnowledgeSettings = Field(default_factory=KnowledgeSettings)
     langsmith: LangSmithSettings = Field(default_factory=LangSmithSettings)
     cors: CORSSettings = Field(default_factory=CORSSettings)
+    ratelimit: RateLimitSettings = Field(default_factory=RateLimitSettings)
 
 
 @lru_cache(maxsize=1)

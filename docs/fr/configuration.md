@@ -100,6 +100,16 @@ Garde-fous appliqués aux téléversements côté client (endpoint `/knowledge/i
 | `CORS_ORIGINS` | `http://localhost:5173` | Origines autorisées (séparées par des virgules) |
 | `CORS_ALLOW_CREDENTIALS` | `true` | Autoriser les credentials |
 
+### `RATELIMIT_` — limitation de débit
+
+Fenêtre glissante par IP, en mémoire du process (défense en profondeur ; `/health` est exempté).
+
+| Variable | Défaut | Description |
+|----------|--------|-------------|
+| `RATELIMIT_ENABLED` | `true` | Active le middleware de rate limiting |
+| `RATELIMIT_REQUESTS` | `120` | Requêtes autorisées par fenêtre et par client |
+| `RATELIMIT_WINDOW_SECONDS` | `60` | Durée de la fenêtre (s) |
+
 ## Surcharger le fichier `.env`
 
 La variable `ENV_FILE` permet de pointer vers un autre fichier :

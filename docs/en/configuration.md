@@ -100,6 +100,16 @@ Guard rails applied to client-side uploads (endpoint `/knowledge/ingest`).
 | `CORS_ORIGINS` | `http://localhost:5173` | Allowed origins (comma-separated) |
 | `CORS_ALLOW_CREDENTIALS` | `true` | Allow credentials |
 
+### `RATELIMIT_` — rate limiting
+
+Per-IP sliding window, in process memory (defense in depth; `/health` is exempt).
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RATELIMIT_ENABLED` | `true` | Enable the rate-limiting middleware |
+| `RATELIMIT_REQUESTS` | `120` | Requests allowed per window and per client |
+| `RATELIMIT_WINDOW_SECONDS` | `60` | Window duration (s) |
+
 ## Overriding the `.env` file
 
 The `ENV_FILE` variable points to a different file:
