@@ -1,8 +1,14 @@
-import { makeAutoObservable, reaction, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction, toJS } from "mobx";
 
 import { streamChat } from "@/api/client";
 import { loadConversations, saveConversations } from "@/lib/storage";
 import { toolLabel } from "@/lib/toolLabels";
+
+// Délai de debounce de la persistance. Pendant le streaming, le contenu est
+// muté à chaque token ; sans debounce on réécrirait localStorage des centaines
+// de fois par réponse. L'effet MobX `delay` ne s'exécute qu'après cette
+// fenêtre d'inactivité, avec le dernier snapshot (état final garanti).
+const PERSIST_DELAY_MS = 500;
 
 export type MessageRole = "user" | "assistant" | "error";
 
@@ -47,10 +53,13 @@ export class ChatStore {
 
     makeAutoObservable(this);
 
-    // Persistance : sauvegarde à chaque changement des conversations.
+    // Persistance debouncée : sauvegarde après une fenêtre d'inactivité, pas à
+    // chaque token du flux. `toJS` produit un snapshot suivi en profondeur ;
+    // l'écriture disque est différée à `PERSIST_DELAY_MS`.
     reaction(
-      () => JSON.stringify(this.conversations),
-      () => saveConversations(this.conversations),
+      () => toJS(this.conversations),
+      (snapshot) => saveConversations(snapshot),
+      { delay: PERSIST_DELAY_MS },
     );
   }
 
