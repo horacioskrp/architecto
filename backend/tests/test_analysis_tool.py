@@ -30,5 +30,6 @@ def test_analyze_dependencies_projet_reel():
     out = analyze_dependencies.invoke({"source": str(root)})
     assert "# Analyse de dépendances" in out
     assert "Dépendances circulaires" in out
-    # pas de cycle, mais la violation de couche connue apparaît
-    assert "architecto.features.chat.router -> architecto.agent.graph" in out
+    # Le projet est sain : ni cycle, ni violation de couche (l'ancienne
+    # features.chat.router -> agent.graph a été résolue par inversion de dépendance).
+    assert "## Violations de couches\n\n- aucune" in out

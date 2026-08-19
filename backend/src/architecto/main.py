@@ -5,10 +5,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from architecto.agent.chat_agent import GraphChatAgent
 from architecto.agent.checkpointer import postgres_checkpointer
 from architecto.agent.graph import build_graph_with, set_graph
 from architecto.api.v1.router import api_router
 from architecto.core.config import settings
+from architecto.features.chat.ports import get_chat_agent
 
 
 @asynccontextmanager
@@ -56,6 +58,10 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Racine de composition : on injecte l'implémentation concrète du port
+    # ChatAgent (agent LangGraph) que la feature chat consomme via abstraction.
+    app.dependency_overrides[get_chat_agent] = GraphChatAgent
 
     app.include_router(api_router, prefix=settings.app.api_v1_prefix)
     return app

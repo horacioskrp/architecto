@@ -41,9 +41,12 @@ def test_regles_configurables():
     assert find_layer_violations(graph, {"features": set()})
 
 
-def test_projet_reel_detecte_la_violation_connue():
-    # L'outil détecte une vraie violation : le router du feature chat importe l'agent.
-    # (features.chat.router -> agent.graph). Documenté ici en attendant l'arbitrage.
+def test_projet_reel_ne_viole_aucune_couche():
+    # Garde-fou : le code réel doit respecter la direction des couches.
+    # (L'ancienne violation features.chat.router -> agent.graph a été résolue par
+    # inversion de dépendance : port ChatAgent + adaptateur injecté dans main.py.)
     root = Path(parser_mod.__file__).resolve().parents[2]
-    edges = {(v.source, v.target) for v in find_layer_violations(build_graph(root))}
-    assert ("architecto.features.chat.router", "architecto.agent.graph") in edges
+    violations = find_layer_violations(build_graph(root))
+    assert violations == [], "\n".join(
+        f"{v.source} -> {v.target} ({v.source_layer}->{v.target_layer})" for v in violations
+    )
