@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // On mocke le client réseau : les tests pilotent le flux via les handlers.
 vi.mock("@/api/client", () => ({ streamChat: vi.fn() }));
@@ -13,12 +13,36 @@ beforeEach(() => {
   mockStream.mockReset();
 });
 
+afterEach(() => {
+  // Évite qu'un pont durable simulé ne fuite vers les autres tests.
+  delete (globalThis as { api?: unknown }).api;
+});
+
 describe("ChatStore — gestion des conversations", () => {
   it("démarre avec une conversation vide et active", () => {
     const s = new ChatStore();
     expect(s.conversations).toHaveLength(1);
     expect(s.messages).toHaveLength(0);
     expect(s.activeId).toBe(s.conversations[0].id);
+  });
+
+  it("hydrate remplace l'état par les conversations persistées (durable)", async () => {
+    const saved = [
+      { id: "x", title: "Restaurée", project: "erp", messages: [{ role: "user", content: "hi" }] },
+    ];
+    (globalThis as { api?: unknown }).api = {
+      conversations: {
+        load: vi.fn().mockResolvedValue(saved),
+        save: vi.fn().mockResolvedValue(undefined),
+      },
+    };
+
+    const s = new ChatStore();
+    await s.hydrate();
+
+    expect(s.conversations).toHaveLength(1);
+    expect(s.active.id).toBe("x");
+    expect(s.messages).toHaveLength(1);
   });
 
   it("newConversation ajoute en tête et l'active", () => {

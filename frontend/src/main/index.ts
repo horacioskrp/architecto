@@ -1,9 +1,39 @@
+import { readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
-import { app, BrowserWindow, session, shell } from "electron";
+import { app, BrowserWindow, ipcMain, session, shell } from "electron";
 
 import icon from "../../build/icon.png?asset";
+
+// Persistance durable des conversations : fichier JSON dans le dossier userData
+// (pas de plafond ~5-10 Mo comme localStorage, survit au vidage du cache web).
+function conversationsFile(): string {
+  return join(app.getPath("userData"), "conversations.json");
+}
+
+async function readConversations(): Promise<unknown> {
+  try {
+    const data: unknown = JSON.parse(await readFile(conversationsFile(), "utf-8"));
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return []; // fichier absent (1er lancement) ou illisible
+  }
+}
+
+async function writeConversations(data: unknown): Promise<void> {
+  // Écriture atomique : fichier temporaire puis rename, pour ne jamais laisser
+  // un JSON tronqué en cas d'interruption.
+  const file = conversationsFile();
+  const tmp = `${file}.tmp`;
+  await writeFile(tmp, JSON.stringify(data), "utf-8");
+  await rename(tmp, file);
+}
+
+function registerStorageIpc(): void {
+  ipcMain.handle("conversations:load", () => readConversations());
+  ipcMain.handle("conversations:save", (_event, data: unknown) => writeConversations(data));
+}
 
 // Backend appelé par le renderer (client léger). Surchargeable via l'env.
 const API_ORIGIN = process.env["ARCHITECTO_API_ORIGIN"] ?? "http://localhost:8000";
@@ -66,6 +96,8 @@ void app.whenReady().then(() => {
   if (!is.dev) {
     applyProductionCSP();
   }
+
+  registerStorageIpc();
 
   app.on("browser-window-created", (_event, window) => {
     optimizer.watchWindowShortcuts(window);

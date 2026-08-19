@@ -41,26 +41,34 @@ export class ChatStore {
   private controller: AbortController | null = null;
 
   constructor() {
-    const saved = loadConversations();
-    if (saved.length > 0) {
-      this.conversations = saved;
-      this.activeId = saved[0].id;
-    } else {
-      const first = emptyConversation();
-      this.conversations = [first];
-      this.activeId = first.id;
-    }
+    // Départ synchrone sur une conversation vide : le chargement durable est
+    // asynchrone (IPC) et se fait via `hydrate()` juste après la construction.
+    const first = emptyConversation();
+    this.conversations = [first];
+    this.activeId = first.id;
 
     makeAutoObservable(this);
 
     // Persistance debouncée : sauvegarde après une fenêtre d'inactivité, pas à
     // chaque token du flux. `toJS` produit un snapshot suivi en profondeur ;
-    // l'écriture disque est différée à `PERSIST_DELAY_MS`.
+    // l'écriture (durable ou localStorage) est différée à `PERSIST_DELAY_MS`.
     reaction(
       () => toJS(this.conversations),
-      (snapshot) => saveConversations(snapshot),
+      (snapshot) => {
+        void saveConversations(snapshot);
+      },
       { delay: PERSIST_DELAY_MS },
     );
+  }
+
+  /** Charge les conversations persistées (durable puis repli) et remplace l'état. */
+  async hydrate(): Promise<void> {
+    const saved = await loadConversations();
+    if (saved.length === 0) return; // rien de persisté : on garde la conv vide
+    runInAction(() => {
+      this.conversations = saved;
+      this.activeId = saved[0].id;
+    });
   }
 
   get active(): Conversation {
