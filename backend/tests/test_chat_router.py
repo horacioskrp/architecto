@@ -2,7 +2,6 @@ import json
 
 import pytest
 
-from architecto.features.chat import router as mod
 from architecto.features.chat.router import chat_stream
 from architecto.features.chat.schemas import ChatRequest
 
@@ -18,17 +17,28 @@ async def _collect_sse(response) -> list[dict]:
     return events
 
 
+class _BoomAgent:
+    """Faux ChatAgent dont le flux échoue, pour vérifier le confinement d'erreur."""
+
+    def __init__(self, secret: str) -> None:
+        self._secret = secret
+
+    async def run(self, *_a: str) -> str:  # pragma: no cover — non utilisé ici
+        return ""
+
+    async def stream(self, *_a: str):
+        raise RuntimeError(self._secret)
+        yield  # pragma: no cover — fait de stream un async generator
+
+
 @pytest.mark.asyncio
-async def test_stream_ne_fuit_pas_le_detail_de_l_erreur(monkeypatch, caplog):
+async def test_stream_ne_fuit_pas_le_detail_de_l_erreur(caplog):
     secret = "connexion postgres://user:motdepasse@interne:5432 refusée"
 
-    async def _boom(**_kwargs):
-        raise RuntimeError(secret)
-        yield  # pragma: no cover — fait de _boom un async generator
-
-    monkeypatch.setattr(mod, "stream_agent", _boom)
-
-    response = await chat_stream(ChatRequest(message="salut", thread_id="t42", project="p"))
+    response = await chat_stream(
+        ChatRequest(message="salut", thread_id="t42", project="p"),
+        agent=_BoomAgent(secret),
+    )
     with caplog.at_level("ERROR"):
         events = await _collect_sse(response)
 
