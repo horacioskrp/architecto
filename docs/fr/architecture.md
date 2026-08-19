@@ -168,10 +168,12 @@ L'app est un **client léger** : le backend tourne séparément (local ou conten
 **État (MobX)** — un store par domaine, agrégés par `RootStore` :
 `ChatStore` (multi-conversations, streaming, activité d'outil), `ThemeStore`,
 `UiStore` (sidebar, modals), `KnowledgeStore` (base de connaissances),
-`DecisionsStore` (ADR par projet). Les conversations et préférences sont
-persistées dans `localStorage` (écriture **debouncée** : pendant le streaming,
-le contenu mute à chaque token, on ne réécrit donc qu'après une fenêtre
-d'inactivité plutôt qu'à chaque token).
+`DecisionsStore` (ADR par projet). Les conversations sont **persistées de façon
+durable** : un fichier JSON côté *main process* (dossier `userData`, via IPC
+`window.api.conversations`), avec **repli** sur `localStorage` en dev navigateur
+et migration automatique de l'ancien historique. L'écriture est **debouncée** :
+pendant le streaming le contenu mute à chaque token, on ne réécrit donc qu'après
+une fenêtre d'inactivité. Le chargement se fait via `ChatStore.hydrate()` (async).
 
 **Contrat API typé** — le client (`api/client.ts`) dérive ses types du schéma
 **OpenAPI** du backend (`api/schema.d.ts`, généré par `pnpm gen:api` à partir de
