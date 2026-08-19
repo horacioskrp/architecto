@@ -1,4 +1,5 @@
 import json
+import logging
 from collections.abc import AsyncIterator
 
 from fastapi import APIRouter
@@ -6,6 +7,8 @@ from fastapi.responses import StreamingResponse
 
 from architecto.agent.graph import run_agent, stream_agent
 from architecto.features.chat.schemas import ChatRequest, ChatResponse
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -42,8 +45,19 @@ async def chat_stream(payload: ChatRequest) -> StreamingResponse:
             ):
                 yield _sse(event)
             yield _sse({"type": "done", "thread_id": payload.thread_id})
-        except Exception as exc:  # noqa: BLE001 — surface l'erreur au client
-            yield _sse({"type": "error", "message": str(exc)})
+        except Exception:
+            # Le détail de l'erreur (traces, messages du provider, chemins, URLs
+            # avec secrets) reste côté serveur ; le client ne reçoit qu'un message
+            # générique pour éviter toute fuite d'information (SEC-4).
+            logger.exception(
+                "Echec du streaming de l'agent (thread_id=%s)", payload.thread_id
+            )
+            yield _sse(
+                {
+                    "type": "error",
+                    "message": "Une erreur interne est survenue pendant la génération.",
+                }
+            )
 
     return StreamingResponse(
         event_source(),
