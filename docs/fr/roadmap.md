@@ -144,7 +144,7 @@ et la mise à l'échelle :
 - **ErrorBoundary** (global + par message) : un rendu défaillant n'efface plus l'app.
 - **Types API générés depuis l'OpenAPI** (`openapi-typescript`) : source de vérité
   unique, fin de la dérive front/back — pipeline `scripts/dump_openapi.py` (back)
-  puis `pnpm gen:api` (front).
+  puis `npm run gen:api` (front).
 - **Tests Vitest** : premiers tests des stores, de l'ErrorBoundary et de la persistance.
 - **Perf** : lazy-load de mermaid et du syntax-highlighter (sortis du bundle initial).
 - **A11y** : `aria-live` sur le streaming, piège de focus dans les modals.

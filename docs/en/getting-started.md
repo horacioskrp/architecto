@@ -44,26 +44,25 @@ curl -X POST http://localhost:8000/api/v1/chat \
 
 ```bash
 cd frontend
-corepack enable pnpm   # enable pnpm (bundled with Node)
-pnpm install
-pnpm dev               # launches the Electron app
+npm install
+npm run dev            # launches the Electron app
 ```
 
 The **Electron** app (thin client) targets the backend at an absolute URL
 (`http://localhost:8000` by default, overridable via `VITE_API_BASE_URL`).
 
-Package an installer: `pnpm build:win` (or `build:mac` / `build:linux`).
+Package an installer: `npm run build:win` (or `build:mac` / `build:linux`).
 
 Other frontend scripts:
 
 ```bash
-pnpm test        # Vitest tests
-pnpm typecheck   # tsc --noEmit
-pnpm gen:api     # regenerate API types from backend/openapi.json
+npm test              # Vitest tests
+npm run typecheck     # tsc --noEmit
+npm run gen:api       # regenerate API types from backend/openapi.json
 ```
 
 The API contract is typed from OpenAPI. After changing backend schemas,
-regenerate: `uv run python scripts/dump_openapi.py` (backend) then `pnpm gen:api`
+regenerate: `uv run python scripts/dump_openapi.py` (backend) then `npm run gen:api`
 (frontend).
 
 ## Optional providers
