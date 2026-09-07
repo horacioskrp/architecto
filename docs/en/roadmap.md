@@ -140,7 +140,7 @@ scaling:
 - **ErrorBoundary** (global + per message): a failing render no longer blanks the app.
 - **API types generated from OpenAPI** (`openapi-typescript`): single source of
   truth, no more front/back drift — pipeline `scripts/dump_openapi.py` (back)
-  then `pnpm gen:api` (front).
+  then `npm run gen:api` (front).
 - **Vitest tests**: first tests for the stores, ErrorBoundary and persistence.
 - **Perf**: lazy-load mermaid and the syntax highlighter (out of the initial bundle).
 - **A11y**: `aria-live` on streaming, focus trap in modals.

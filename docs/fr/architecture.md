@@ -176,13 +176,13 @@ pendant le streaming le contenu mute à chaque token, on ne réécrit donc qu'ap
 une fenêtre d'inactivité. Le chargement se fait via `ChatStore.hydrate()` (async).
 
 **Contrat API typé** — le client (`api/client.ts`) dérive ses types du schéma
-**OpenAPI** du backend (`api/schema.d.ts`, généré par `pnpm gen:api` à partir de
+**OpenAPI** du backend (`api/schema.d.ts`, généré par `npm run gen:api` à partir de
 `backend/openapi.json`). Une modification de schéma côté backend qui n'est pas
 propagée casse le `tsc` : plus de dérive front/back silencieuse.
 
 **Robustesse & tests** — un `ErrorBoundary` (global + par message) évite l'écran
 blanc ; les stores et composants critiques sont couverts par des tests **Vitest**
-(`pnpm test`). Mermaid et le syntax-highlighter sont chargés en *lazy* (hors du
+(`npm test`). Mermaid et le syntax-highlighter sont chargés en *lazy* (hors du
 bundle initial).
 
 ## Choix structurants
