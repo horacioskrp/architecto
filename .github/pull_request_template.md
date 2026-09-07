@@ -11,7 +11,7 @@
 ## Vérification
 
 - [ ] `ruff check .` + `pytest` verts (backend)
-- [ ] `pnpm typecheck` + `pnpm test` + build verts (frontend, le cas échéant)
+- [ ] `npm run typecheck` + `npm test` + build verts (frontend, le cas échéant)
 - [ ] Nouvelle logique couverte par au moins un test
 - [ ] Documentation mise à jour si le comportement/API change (FR **et** EN)
 
